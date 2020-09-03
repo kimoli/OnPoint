@@ -64,31 +64,31 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         trialNums[i] = i + 1
         aimingLandmarks[i] = 0
         tgtDistance[i] = targetDistance
-        if i < base_no_fb :
+        if i < base_no_fb : # baseline acclimation phase without online cursor feedback, will have cycleDistribution[0] of these trials for every target
             onlineFB[i] = 0
             endpointFB[i] = 0
             rotation[i] = float(0)
             clampedFB[i] = float(0)
             targetJump[i] = float(0)
-        elif i < base_fb :
+        elif i < base_fb : # baseline phase with online feedback, will have cycleDistribution[1] of these trials for every target
             onlineFB[i] = 1
             endpointFB[i] = 1
             rotation[i] = float(0)
             clampedFB[i] = float(0)
             targetJump[i] = float(0)
-        elif i < demo:
+        elif i < demo: # practice trials? will have numDemoTrials of these where it's explained to the participant that they will lose control over the cursor
+            onlineFB[i] = 1
+            endpointFB[i] = 1
+            rotation[i] = float(0) # this was originally rotationAngle but I think it should be unperturbed
+            clampedFB[i] = float(1)
+            targetJump[i] = float(0)
+        elif i < rotate : # training trials, will have cucleDistribution[2] of these for every target location
             onlineFB[i] = 1
             endpointFB[i] = 1
             rotation[i] = float(rotationAngle)
             clampedFB[i] = float(1)
-            targetJump[i] = float(0)
-        elif i < rotate : 
-            onlineFB[i] = 1
-            endpointFB[i] = 1
-            rotation[i] = float(rotationAngle)
-            clampedFB[i] = float(1)
-            targetJump[i] = float(0)
-        else:
+            targetJump[i] = float(1) # was 0 for the initial release of the experiment
+        else: # no-feedback test trials, will have cycleDistribution[3] of these for every target location
             onlineFB[i] = 0
             endpointFB[i] = 0
             rotation[i] = float(0)
@@ -147,14 +147,14 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         json.dump(jsonData, outfile)
 
 
-nonDemoCycles = [2, 2, 2, 2]
-generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270) 
+nonDemoCycles = [0, 2, 2, 2]
+generateJSON(2, 6, nonDemoCycles, -20, 80, 2, 270) 
 """
 The above call 'generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270)' will generate a target file with:
 - 2 targets
 - 8 cycles (8 x 2 = 16 reaches) distributed into cycles of 2 (split by nonDemoCycles)
 - -10 rotation angle (10 degrees clockwise)
 - TargetDistance is not obsolete
-- 2 demo trials at 270 degrees (straight down)
+- 2 demo cycles at 270 degrees (straight down)
 """
 

@@ -72,3 +72,6 @@ node_modules/
 
 # .DS_Store ignored
 .DS_Store
+
+# firebase secret access key
+test-onpoint-firebase-adminsdk-2eveo-cc6ba9156c.json

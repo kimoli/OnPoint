@@ -127,10 +127,10 @@ function checkInfo(){
   console.log(subject.handedness);
   console.log(values)
   if (!subject.id || !subject.age || !subject.sex || !subject.handedness || !subject.mousetype) {
-    alert("Please fill out your basic information!");
+    alert("Please fill out your basic information");
     return;
   } else if (actualCode.localeCompare(code) != 0) {
-    alert("Make sure to find the code from the last page before proceeding!")
+    alert("Make sure to find the code from the last page before proceeding")
     return;
   } else {
     show('container-exp', 'container-info');
@@ -304,7 +304,7 @@ function gameSetup(data) {
   start_x = screen_width/2;
   start_y = screen_height/2;
   start_radius = Math.round(target_dist * 4.5 / 80.0);
-  start_color = 'white';
+  start_color = 'deepskyblue';
 
   svgContainer.append('circle')
         .attr('cx', start_x)
@@ -331,7 +331,7 @@ function gameSetup(data) {
   target_x = screen_width/2;
   target_y = Math.round(screen_height/10 * 2);
   target_radius = Math.round(target_dist * 4.5/80.0);
-  target_color = 'blue';
+  target_color = 'orange';
 
   svgContainer.append('circle')
         .attr('cx', target_x)
@@ -356,7 +356,7 @@ function gameSetup(data) {
   cursor_x = 0;
   cursor_y = 0;
   cursor_radius = Math.round(target_dist * 1.75 * 1.5/80.0);
-  cursor_color = 'white';
+  cursor_color = 'deepskyblue';
 
   // Drawing the displayed cursor 
   svgContainer.append('circle')
@@ -370,14 +370,14 @@ function gameSetup(data) {
   // The between block messages that will be displayed
   // **TODO** Update messages depending on your experiment
   messages = [["Dummy Message Test"],
-          ["The white dot will now be visible.", // Message displayed when bb_mess == 1
-          "Quickly move your white dot to the target.",
+          ["The blue dot will now be visible.", // Message displayed when bb_mess == 1
+          "Quickly move your blue dot to the target.",
           "Press 'b' when you are ready to proceed."],
           ["This is an instruction understanding check, you may proceed ONLY if you choose the correct choice.", // Message displayed when bb_mess == 2
           "Choosing the wrong choice will result in early game termination and an incomplete HIT!",
-          "Press 'a' if you should ignore the white dot and aim directly towards the target.",
+          "Press 'a' if you should ignore the blue dot and aim directly towards the target.",
           "Press 'b' if you should be aiming away from the target."],
-          ["The white dot will now be hidden.",  // bb_mess == 3
+          ["The blue dot will now be hidden.",  // bb_mess == 3
           "Continue aiming DIRECTLY towards the target.",
           "Press SPACE BAR when you are ready to proceed."],
           ["This is an attention check.", // bb_mess == 4
@@ -386,8 +386,8 @@ function gameSetup(data) {
           ["This is an attention check.", // bb_mess == 5
           "Press the key 'a' on your keyboard to CONTINUE.",
           "Pressing any other key will result in a premature game termination and an incomplete HIT!"],
-          ["The white dot will no longer be under your control.", // bb_mess == 6
-          "IGNORE the white dot as best as you can and continue aiming DIRECTLY towards the target.",
+          ["The blue dot will no longer be under your control.", // bb_mess == 6
+          "IGNORE the blue dot as best as you can and continue aiming DIRECTLY towards the target.",
           "This will be a practice trial",
           "Press SPACE BAR when you are ready to proceed."]];
 
@@ -605,7 +605,7 @@ function gameSetup(data) {
     if (game_phase == HOLDING) {
       if (r <= start_radius) { // Fill the center if within start radius
         d3.select('#cursor').attr('display', 'none'); 
-        d3.select('#start').attr('fill', 'white');
+        d3.select('#start').attr('fill', 'deepskyblue');
       } else { // Display cursor otherwise
         d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
         d3.select('#start').attr('fill', 'none');
@@ -614,7 +614,7 @@ function gameSetup(data) {
       // Calculations done in SHOW_TARTETS phase
     } else if (game_phase == SHOW_TARGETS) {
       d3.select('#cursor').attr('display', 'none');
-      d3.select('#start').attr('fill', 'white');
+      d3.select('#start').attr('fill', 'deepskyblue');
       // Flag cursor to display if within certain distance to center
     } else if (game_phase == SEARCHING) {
       if (r <= target_dist * 0.75) {
@@ -726,7 +726,7 @@ function gameSetup(data) {
 
     // Start circle becomes visible, target, cursor invisible
     d3.select('#start').attr('display', 'block').attr('fill', 'none');
-    d3.select('#target').attr('display', 'none').attr('fill', 'blue');
+    d3.select('#target').attr('display', 'none').attr('fill', 'orange');
     d3.select('#cursor').attr('display', 'none');
     // d3.select('#search_ring').attr('display', 'block').attr('r', r);
     d3.select('#message-line-1').attr('display', 'none');
@@ -919,7 +919,7 @@ function startGame() {
   // } else {
   //   fileName = "/static/js/multiclamp05052020V5.json";
   // }
-  fileName = "tgt_files/2Targ_clamp_demo_file.json"
+  fileName = "tgt_files/testPython.json"
   subject.tgt_file = fileName;
   subjTrials.group_type = "null"; // **TODO** update group_type to manage the groups
   $.getJSON(fileName, function(json){
