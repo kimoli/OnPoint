@@ -52,7 +52,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
     base_no_fb = cycleDistribution[0] * numTargets
     base_fb = base_no_fb + (cycleDistribution[1] * numTargets)
     demo = base_fb + numDemoTrials
-    rotate = demo + (cycleDistribution[2] * numTargets)
+    rotate = demo + (cycleDistribution[2] * numTargets) # number of trials in the rotation phase
     aftereffect_no_fb = rotate + (cycleDistribution[3] * numTargets)
     if (totalNumTrials != aftereffect_no_fb):
         raise Exception('Number of reaches do not add up. Should have ' + str(totalNumTrials) + ' targets, but only has ' + str(aftereffect_no_fb) + '.')
@@ -77,17 +77,37 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
             clampedFB[i] = float(0)
             targetJump[i] = float(0)
         elif i < demo: # practice trials? will have numDemoTrials of these where it's explained to the participant that they will lose control over the cursor
-            onlineFB[i] = 1
-            endpointFB[i] = 1
-            rotation[i] = float(0) # this was originally rotationAngle but I think it should be unperturbed
-            clampedFB[i] = float(1)
-            targetJump[i] = float(0)
-        elif i < rotate : # training trials, will have cucleDistribution[2] of these for every target location
+            # right now, this phase demonstrates to the participant what the clamp is going to look like
+            # for some reason, it is doing X cycles * number of targets, but I'm not sure why, because there is only one demo target right now
             onlineFB[i] = 1
             endpointFB[i] = 1
             rotation[i] = float(rotationAngle)
             clampedFB[i] = float(1)
-            targetJump[i] = float(1) # was 0 for the initial release of the experiment
+            targetJump[i] = float(0)
+        elif i < rotate : # training trials, will have cucleDistribution[2] of these for every target location
+            # for this experiment, keep feedback constant throughout the block
+            onlineFB[i] = 1
+            endpointFB[i] = 1    
+            
+            # to randomize trial types, add a randomization function in here and some if else statements
+            randomtt = random.randint(0,3)
+            if randomtt==0 : # no errors (0 error clamp), working as of 9/3/2020
+                rotation[i] = float(0)
+                clampedFB[i] = float(1)
+                targetJump[i] = float(0)
+            elif randomtt==1 : # SPE only (clamp some rotation with target jump to cursor end), working as of 9/3/2020
+                rotation[i] = float(rotationAngle)
+                clampedFB[i] = float(1)
+                targetJump[i] = float(1)
+            elif randomtt==2 : # RPE only (clamp straight to target with target jump away from cursor end), working as of 9/3/2020
+                rotation[i] = float(0)
+                clampedFB[i] = float(1)
+                targetJump[i] = float(10)
+            else: # SPE and RPE (clamp with some rotation, no target jump), working as of 9/3/2020
+                rotation[i] = float(rotationAngle)
+                clampedFB[i] = float(1)
+                targetJump[i] = float(0)
+                
         else: # no-feedback test trials, will have cycleDistribution[3] of these for every target location
             onlineFB[i] = 0
             endpointFB[i] = 0
@@ -143,12 +163,12 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         print ("value: ", jsonData[key])
         print ("")
 
-    with open('testPython.json', 'w') as outfile:
+    with open('randTest.json', 'w') as outfile:
         json.dump(jsonData, outfile)
 
 
-nonDemoCycles = [0, 2, 2, 2]
-generateJSON(4, 12, nonDemoCycles, -20, 80, 2, 270) 
+nonDemoCycles = [0, 2, 6, 2]
+generateJSON(4, 10, nonDemoCycles, -20, 80, 1, 270) 
 """
 The above call 'generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270)' will generate a target file with:
 - 2 targets

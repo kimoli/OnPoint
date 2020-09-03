@@ -406,7 +406,7 @@ function gameSetup(data) {
         .attr('font-size', message_size)
         .attr('id', 'message-line-1')
         .attr('display', 'block')
-        .text('Move the white dot to the center.');
+        .text('Move the blue dot to the center.');
 
   svgContainer.append('text')
         .attr('text-anchor', 'middle')
@@ -417,7 +417,7 @@ function gameSetup(data) {
         .attr('font-size', message_size)
         .attr('id', 'message-line-2')
         .attr('display', 'block')
-        .text('The white dot will be visible during your reach.');
+        .text('The blue dot will be visible during your reach.');
 
   svgContainer.append('text')
         .attr('text-anchor', 'middle')
@@ -428,7 +428,7 @@ function gameSetup(data) {
         .attr('font-size', message_size)
         .attr('id', 'message-line-3')
         .attr('display', 'block')
-        .text('Quickly move your white dot to the target.');
+        .text('Quickly move your blue dot to the target.');
 
   svgContainer.append('text')
         .attr('text-anchor', 'middle')
@@ -919,7 +919,7 @@ function startGame() {
   // } else {
   //   fileName = "/static/js/multiclamp05052020V5.json";
   // }
-  fileName = "tgt_files/testPython.json"
+  fileName = "tgt_files/randTest.json"
   subject.tgt_file = fileName;
   subjTrials.group_type = "null"; // **TODO** update group_type to manage the groups
   $.getJSON(fileName, function(json){
