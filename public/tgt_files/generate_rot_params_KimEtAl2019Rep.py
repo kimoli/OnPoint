@@ -18,7 +18,7 @@ def generateTargetAngles(numTargets):
     """
     temporary usage of this function for non-evenly spaced targets
     """
-    angleList = [45, 135, 225, 315]
+    angleList = [45, 135]
     if (len(angleList) != numTargets):
         raise Exception('Target file does not have the right amount of targets. Should have ' + str(numTargets) + ' targets, but only has ' + str(len(angleList)))
     
@@ -33,7 +33,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
     jsonData = {}
     targetAngles = generateTargetAngles(numTargets)
     numTrials = numTargets * movementCycle # block size
-    numDemoTrials = numDemoCycles * numTargets
+    numDemoTrials = 3 # just have 3 demo trials like in the Kim et al 2019 paper
     totalNumTrials = numTrials + numDemoTrials
     jsonData["numtrials"] = totalNumTrials
     trialNums = {}
@@ -47,6 +47,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
     anglesDict = {}
     betweenBlocks = {}
     targetJump = {}
+    targetSize = {}
     
     # Breakpoints between phases
     base_no_fb = cycleDistribution[0] * numTargets
@@ -64,6 +65,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         trialNums[i] = i + 1
         aimingLandmarks[i] = 0
         tgtDistance[i] = targetDistance
+        targetSize[i] = 3.5
         if i < base_no_fb : # baseline acclimation phase without online cursor feedback, will have cycleDistribution[0] of these trials for every target
             onlineFB[i] = 0
             endpointFB[i] = 0
@@ -90,7 +92,8 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
             endpointFB[i] = 1    
             
             # to randomize trial types, add a randomization function in here and some if else statements
-            randomtt = random.randint(0,3)
+            #randomtt = random.randint(0,3)
+            randomtt = 3 # cursor rotation without moving target
             if randomtt==0 : # no errors (0 error clamp), working as of 9/3/2020
                 rotation[i] = float(0)
                 clampedFB[i] = float(1)
@@ -157,18 +160,19 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
     jsonData["tgt_distance"] = tgtDistance
     jsonData["between_blocks"] = betweenBlocks
     jsonData["target_jump"] = targetJump
+    jsonData["tgt_size"] = targetSize
  
     for key in jsonData.keys():
         print ("key: ", key)
         print ("value: ", jsonData[key])
         print ("")
 
-    with open('randTest.json', 'w') as outfile:
+    with open('KimEtAl2019Rep.json', 'w') as outfile:
         json.dump(jsonData, outfile)
 
 
-nonDemoCycles = [0, 2, 6, 2]
-generateJSON(4, 10, nonDemoCycles, 1.75, 80, 1, 270) 
+nonDemoCycles = [2, 2, 2, 2]
+generateJSON(2, 8, nonDemoCycles, 1.75, 80, 1, 270) 
 """
 The above call 'generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270)' will generate a target file with:
 - 2 targets

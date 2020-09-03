@@ -494,6 +494,7 @@ function gameSetup(data) {
   between_blocks = target_file_data.between_blocks;
   target_jump = target_file_data.target_jump;
   num_trials = target_file_data.numtrials;
+  target_size = target_file_data.tgt_size;
 
   // Initializing trial count
   trial = 0;
@@ -761,7 +762,8 @@ function gameSetup(data) {
     // Target becomes visible
     target_x = start_x + target_dist * Math.cos(target_angle[trial] * Math.PI/180);
     target_y = start_y - target_dist * Math.sin(target_angle[trial] * Math.PI/180);
-    d3.select('#target').attr('display', 'block').attr('cx', target_x).attr('cy', target_y);
+    tgt_rad = Math.round(target_dist * target_size[trial]/80.0);
+    d3.select('#target').attr('display', 'block').attr('cx', target_x).attr('cy', target_y).attr('r', tgt_rad);
     target_invisible = false;
   }
   
@@ -823,6 +825,7 @@ function gameSetup(data) {
       d3.select('#cursor').attr('display', 'none');
       trial_type = "no_fb";
     }
+
     // Start next trial after feedback time has elapsed
     if (if_slow) {
       if_slow = false;
@@ -919,7 +922,7 @@ function startGame() {
   // } else {
   //   fileName = "/static/js/multiclamp05052020V5.json";
   // }
-  fileName = "tgt_files/randTest.json"
+  fileName = "tgt_files/KimEtAl2019Rep.json"
   subject.tgt_file = fileName;
   subjTrials.group_type = "null"; // **TODO** update group_type to manage the groups
   $.getJSON(fileName, function(json){
