@@ -37,6 +37,13 @@
         body, #message { margin-top: 0; background: white; box-shadow: none; }
         body { border-top: 16px solid #ffa100; }
       }
+    -->
+
+    <style type="text/css">
+      <!--
+        .tab { margin-left: 40px; }
+      -->
+    </style>
   </head>
   <body>
    <main class="container">
@@ -134,15 +141,15 @@
             <p>
                 There are two simple steps:
             </p>
-            <p style="color:red">
-                1. Bring the blue dot to the center of your screen. The blue dot will initially be hidden, but once you get within a certain distance from the center it will be displayed.
+            <p class="tab">
+                1. Bring the blue dot to the center of your screen. The blue dot will initially be hidden, but it will be displayed once you get within a certain distance from the center.
             </p>
-            <p style="color:red">
+            <p class = "tab">
                 2. Once the orange dot (your target) appears, slice through it <em>FAST</em> with the blue dot (visible or hidden).
             </p>
-            <p style="color:red">
-                <b>PLEASE READ:</b> After several reaches, the blue dot will stop following the direction of where you reach, and instead move on its own. When this happens, <b><em>IGNORE</em></b> the blue dot and continue aiming your reaches <b>directly</b> to the target. 
-                Throughout the entire experiment, you should be aiming <em>DIRECTLY</em> to the target. [Type "mouse" in the next page to indicate that you have read this].
+            <p>
+                <b>PLEASE READ:</b> After several trials, the blue dot will stop following the direction of your movements, and instead move on its own. When this happens, <b><em>ignore</em></b> the blue dot and continue moving <b>directly</b> to the target. 
+                Throughout the entire experiment, you should be moving the mouse <em>DIRECTLY</em> to the target. [Type "mouse" on the next page to indicate that you have read this].
             </p>
             <div class="row">
                 <center>
@@ -210,12 +217,23 @@
               </div>
 
             <div class="questions" id="mouseQ">
-                What kind of mouse are you using (Please only use trackpads): 
+                What kind of mouse are you using? (Please only use trackpads): 
                 <select id="mousetype" name="mousetype">
                     <option value="">
                     <option value="optical">Optical mouse (standard mouse)</option>
                     <option value="trackpad">Trackpad mouse</option>
                     <option value="trackball">Trackball mouse</option>
+                    <option value="touchscreen">Touchscreen (tablet)</option>
+                </select>
+            </div>
+
+            <div class="questions" id="monitorQ">
+                What kind of screen are you using to view this browser window? (Please sit directly in front of the screen): 
+                <select id="mousetype" name="mousetype">
+                    <option value="">
+                    <option value="monitor">Standalone monitor</option>
+                    <option value="laptop">Laptop screen</option>
+                    <option value="tablet">Tablet</option>
                 </select>
             </div>
 
