@@ -7,6 +7,8 @@ Currently supported experiments include:
 Remember to update necessary fields before starting the game. All fields that require change will be marked by a "**TODO**" comment.
 */
 
+// Notes: might like to break out the timers into different variable names so that things don't get mixed up in case Javascript executes in an unexpected order?
+
 // Object used to track reaching data (updated every reach and uploaded to database)
 var subjTrials = {
   id: null,
@@ -88,6 +90,11 @@ var reach_feedback;
 var bb_counter;
 var target_invisible;
 var cursor_show;
+var mousepos_x;
+var mousepos_y;
+var mousetm;
+var elapsedTime;
+var curTime;
 
 // Object to save reach data per reach, usage has become slightly obsolete but is still used as an intermediate object to store data before uploading to database
 var reachData = {
@@ -238,6 +245,12 @@ function gameSetup(data) {
   cursor_y = 0;
   cursor_radius = Math.round(target_dist * 1.75 * 1.5/80.0);
   cursor_color = 'deepskyblue';
+
+  mousepos_x = [start_x]; // initialize as start position
+  mousepos_y = [start_y];
+  mousetm = [0];
+  elapsedTime = NaN; // initialize as NaN, but only update when checking the time in the "MOVING" phase
+  curTime = NaN;
 
   // Drawing the displayed cursor 
   svgContainer.append('circle')
@@ -452,7 +465,7 @@ function gameSetup(data) {
 
     // Calculations done in the MOVING phase
     if (game_phase == MOVING) {
-      console.log(target_jump[trial]); // Debugging message to check if there was supposed to be a target jump
+      // console.log(target_jump[trial]); // Debugging message to check if there was supposed to be a target jump
       /*
         Jump target to clamp if target_jump[trial] == 1
         Jump target away from clamp by target_jump[trial] if value is neither 0 || 1
@@ -474,10 +487,24 @@ function gameSetup(data) {
       } else if (online_fb[trial]) { // Rotated feedback (vmr)
         cursor_x = start_x + r * Math.cos((hand_angle + rotation[trial]) * Math.PI/180);
         cursor_y = start_y - r * Math.sin((hand_angle + rotation[trial]) * Math.PI/180);
-      } else { // Veritical feedback
+      } else { // Veridical feedback
         cursor_x = hand_x;
         cursor_y = hand_y;
       }
+
+      // Record cursor location whenever movement is detected
+      curTime = new Date(); // begin is a timestamp that gets reset once the cursor starts moving
+      elapsedTime = curTime.getTime() - begin.getTime();
+      //if (elapsedTime % 5 == 0) { // sample every 5 ms -- this seems too slow somehow
+        //console.log(elapsedTime); // debugging message to track when the script enters this if statement
+        /*
+          Code here will only execute every 5th ms that has mouse movement. So, if the user pauses for some reason, some 5 ms time periods will be skipped
+        */
+      //}
+      mousepos_x.push(hand_x);
+      mousepos_y.push(hand_y);
+      mousetm.push(elapsedTime);
+
     } else {
       cursor_x = hand_x;
       cursor_y = hand_y;
@@ -493,7 +520,7 @@ function gameSetup(data) {
         d3.select('#start').attr('fill', 'none');
       }
       // d3.select('#search_ring').attr('display', 'none');
-      // Calculations done in SHOW_TARTETS phase
+      // Calculations done in SHOW_TARGETS phase
     } else if (game_phase == SHOW_TARGETS) {
       d3.select('#cursor').attr('display', 'none');
       d3.select('#start').attr('fill', 'deepskyblue');
@@ -658,17 +685,27 @@ function gameSetup(data) {
     // Start of timer for movement time
     begin = new Date();
 
+    mousetm = [0];
+
     // Start circle disappears
     d3.select('#start').attr('display', 'none');
+
   }
 
   // Phase where users have finished their reach and receive feedback
+  // should be triggered immediately upon crossing the ring that the targets are plotted
   function fb_phase() {
     game_phase = FEEDBACK;
+
+    // debugging output
+    console.log(mousepos_x)
+    console.log(mousepos_y)
+    console.log(mousetm)
 
     // Record movement time as time spent reaching before intersecting target circle
     // Can choose to add audio in later if necessary
     mt = new Date() - begin;
+
 
     if (mt > too_slow_time) {
       // d3.select('#target').attr('fill', 'red');
@@ -740,6 +777,12 @@ function gameSetup(data) {
     subjTrials.search_time = search_time;
     subjTrials.reach_feedback = reach_feedback;
     recordTrialSubj(trialcollection, subjTrials);
+
+    // record mouse trajectory TO DO!
+
+    // reset starting mouse position
+    mousepos_x = [start_x];
+    mousepos_y = [start_y];
 
     // Updating subject data to display most recent reach on database
     subject.currTrial = trial + 1;
