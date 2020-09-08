@@ -81,7 +81,8 @@ var subject = {
   ethnicity: null,
   race: null,
   clampQ: null,
-  comments: null
+  comments: null,
+  ccd: null
 }
 
 // Function used to check if all questions were filled in info form, if so, starts the experiment 
@@ -97,6 +98,8 @@ function checkInfo(){
   var code = values[6].value;
   subject.ethnicity = values[7].value;
   subject.race = values[8].value;
+  subject.ccd = Math.floor(Math.random()*(9999 - 1000 + 1) + 1000);
+  document.getElementById("ccd").innerHTML = subject.ccd;
   if (noSave) {
     show('container-exp', 'container-info');
     openFullScreen();
