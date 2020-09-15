@@ -52,6 +52,7 @@ var cursor_x;
 var cursor_y;
 var cursor_radius;
 var cursor_color;
+var search_color;
 var messages;
 var line_size;
 var message_size;
@@ -96,6 +97,11 @@ var mousetm;
 var elapsedTime;
 var curTime;
 var showCursor;
+var searchRad;
+var itiTimeoutTimer;
+var instrucTimeoutTimer;
+var instrucTimeLimit;
+var ititimelimit;
 
 // Object to save reach data per reach, usage has become slightly obsolete but is still used as an intermediate object to store data before uploading to database
 var reachData = {
@@ -114,7 +120,7 @@ var reachData = {
 }
 
 // specify at the top here whether mouse pointer will be shown or not
-var showPointer = 0;
+var showPointer = 1;
 
 // Function used to start running the game
 // **TODO** Update the 'fileName' to path to targetfile
@@ -132,7 +138,7 @@ function startGame() {
   // } else {
   //   fileName = "/static/js/multiclamp05052020V5.json";
   // }
-  fileName = "tgt_files/KimEtAl2019Rep.json"
+  fileName = "tgt_files/KimEtAl2019Rep_hit.json"
   subject.tgt_file = fileName;
   subjTrials.group_type = "null"; // **TODO** update group_type to manage the groups
   $.getJSON(fileName, function(json){
@@ -201,7 +207,7 @@ function gameSetup(data) {
   start_x = screen_width/2;
   start_y = screen_height/2;
   start_radius = Math.round(target_dist * 4.5 / 80.0);
-  start_color = 'deepskyblue';
+  start_color = 'lime';
 
   svgContainer.append('circle')
         .attr('cx', start_x)
@@ -214,21 +220,11 @@ function gameSetup(data) {
         .attr('display', 'none');
 
 
-  // Drawing the search ring that expands and contracts as users search for the start circle (currently unemployed)
-  svgContainer.append('circle')
-        .attr('cx', start_x)
-        .attr('cy', start_y)
-        .attr('fill', 'none')
-        .attr('stroke', start_color)
-        .attr('stroke-width', 2)
-        .attr('id', 'search_ring')
-        .attr('display', 'none');
-
   // Setting parameters and drawing the target 
   target_x = screen_width/2;
   target_y = Math.round(screen_height/10 * 2);
   target_radius = Math.round(target_dist * 4.5/80.0);
-  target_color = 'orange';
+  target_color = 'magenta';
 
   svgContainer.append('circle')
         .attr('cx', target_x)
@@ -238,7 +234,7 @@ function gameSetup(data) {
         .attr('id', 'target')
         .attr('display', 'none');
 
-  /* Initializing variables for:
+    /* Initializing variables for:
       - Coordinates of the mouse 
       - Coordinates where the mouse crosses the target distance
       - Radius from center to hand coordinates
@@ -253,13 +249,19 @@ function gameSetup(data) {
   cursor_x = 0;
   cursor_y = 0;
   cursor_radius = Math.round(target_dist * 1.75 * 1.5/80.0);
-  cursor_color = 'deepskyblue';
+  cursor_color = 'lime';
+  search_color = 'yellow';
 
   mousepos_x = [start_x]; // initialize as start position
   mousepos_y = [start_y];
   mousetm = [0];
   elapsedTime = NaN; // initialize as NaN, but only update when checking the time in the "MOVING" phase
   curTime = NaN;
+
+  instrucTimeLimit = 60000; // 1 min
+  ititimelimit = 120000; // 2 mins
+  //instrucTimeLimit = 30000; // 30 s for testing
+  //ititimelimit = 30000; // 30 s for testing
 
   // Drawing the displayed cursor 
   svgContainer.append('circle')
@@ -270,17 +272,29 @@ function gameSetup(data) {
         .attr('id', 'cursor')
         .attr('display', 'block');
 
+  searchRad = screen_width/2;
+  // Drawing the search ring that expands and contracts as users search for the start circle (currently unemployed)
+  svgContainer.append('circle')
+        .attr('cx', start_x)
+        .attr('cy', start_y)
+        .attr('r', searchRad)
+        .attr('fill', 'none')
+        .attr('stroke', 'search_color')
+        .attr('stroke-width', 2)
+        .attr('id', 'search_ring')
+        .attr('display', 'none');
+
   // The between block messages that will be displayed
   // **TODO** Update messages depending on your experiment
   messages = [["Dummy Message Test"],
-          ["The blue dot will now be visible.", // Message displayed when bb_mess == 1
-          "Quickly move your blue dot to the target.",
+          ["The green dot will now be visible while you move towards the target.", // Message displayed when bb_mess == 1
+          "Quickly move your green dot to the target.",
           "Press 'b' when you are ready to proceed."],
           ["This is an instruction understanding check, you may proceed ONLY if you choose the correct choice.", // Message displayed when bb_mess == 2
           "Choosing the wrong choice will result in early game termination and an incomplete HIT!",
-          "Press 'a' if you should ignore the blue dot and aim directly towards the target.",
+          "Press 'a' if you should ignore the green dot and aim directly towards the target.",
           "Press 'b' if you should be aiming away from the target."],
-          ["The blue dot will now be hidden.",  // bb_mess == 3
+          ["The green dot will now be hidden.",  // bb_mess == 3
           "Continue aiming DIRECTLY towards the target.",
           "Press SPACE BAR when you are ready to proceed."],
           ["This is an attention check.", // bb_mess == 4
@@ -289,14 +303,17 @@ function gameSetup(data) {
           ["This is an attention check.", // bb_mess == 5
           "Press the key 'a' on your keyboard to CONTINUE.",
           "Pressing any other key will result in a premature game termination and an incomplete HIT!"],
-          ["The blue dot will no longer be under your control.", // bb_mess == 6
-          "IGNORE the blue dot as best as you can and continue aiming DIRECTLY towards the target.",
+          ["The green dot will no longer be under your control while you move towards the target.", // bb_mess == 6
+          "IGNORE the green dot as best as you can and continue aiming DIRECTLY towards the target.",
           "This will be a practice trial",
           "Press SPACE BAR when you are ready to proceed."]];
 
   // Setting size of the displayed letters and sentences
   line_size = Math.round(screen_height/30)
   message_size = String(line_size).concat("px"); 
+
+  // initialize a timer for starting the experiment
+  instrucTimeoutTimer = setTimeout(instrucTimedOut, instrucTimeLimit); // kick subject if they take too long to read the instructions
 
   // Setting up first initial display once the game is launched 
   // **TODO** Update the '.text' sections to change initial displayed message
@@ -358,7 +375,7 @@ function gameSetup(data) {
         .text('Move Faster'); 
 
   // Parameters and display for when users take too long to locate the center
-  search_too_slow = 3000; // in milliseconds
+  search_too_slow = 5000; // in milliseconds
   svgContainer.append('text')
         .attr('text-anchor', 'middle')
         .attr('x', screen_width/2)
@@ -368,7 +385,7 @@ function gameSetup(data) {
         .attr('font-size', message_size)
         .attr('id', 'search_too_slow')
         .attr('display', 'none')
-        .text('To find your cursor, try moving your mouse to the center of the screen.');
+        .text('The yellow circle gets smaller as your cursor approaches the starting circle (blue).');
 
   // Parameters and display for the reach counter located at the bottom right corner
   counter = 1;
@@ -448,6 +465,10 @@ function gameSetup(data) {
   target_invisible = true; // for clicking to see target
   cursor_show = false;
 
+  //setTimeout(gameTimedOut, 30000); // 30s timeout for testing
+  setTimeout(gameTimedOut, 3600000); // one hour timeout
+}
+
   /********************
   * Update Cursor Function*
   * This function gets called every time a participant moves their mouse.*
@@ -459,7 +480,7 @@ function gameSetup(data) {
     * Triggers changes in game phase if appropriate conditions are met*
   ********************/
   function update_cursor(event) {
-    var eventDoc, doc, body, pageX, pageY; // These variables are now obsolete
+    var eventDoc, doc, body, pageX, pageY; // These variables are now bsolete
 
     // Record the current mouse location
     event = event || window.event; 
@@ -520,40 +541,83 @@ function gameSetup(data) {
     }
 
     // Calculations done in the HOLDING phase
+    // note from OK: not totally sure why this has to be different from the searching phase
     if (game_phase == HOLDING) {
       if (r <= start_radius) { // Fill the center if within start radius
         d3.select('#cursor').attr('display', 'none'); 
-        d3.select('#start').attr('fill', 'deepskyblue');
-      } else { // Display cursor otherwise
-        d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
-        d3.select('#start').attr('fill', 'none');
+        d3.select('#start').attr('fill', start_color);
+        d3.select('#search_ring').attr('r',r).attr('display', 'none');
       }
-      // d3.select('#search_ring').attr('display', 'none');
-      // Calculations done in SHOW_TARGETS phase
-    } else if (game_phase == SHOW_TARGETS) {
-      d3.select('#cursor').attr('display', 'none');
-      d3.select('#start').attr('fill', 'deepskyblue');
-      // Flag cursor to display if within certain distance to center
-    } else if (game_phase == SEARCHING) {
-      if (r <= target_dist * 0.75) {
+
+      if (r <= target_dist/8) {
         cursor_show = true;
-      } 
-      
+      //} else if (new Date() - begin > search_too_slow){
+      //  cursor_show = true;
+      //  d3.select('#search_ring').attr('stroke','LightGray');
+      } else {
+        cursor_show = false;
+      }
+
       // Display the cursor if flag is on 
       if (cursor_show) {
+        if (showPointer == 1) { 
+          //show mouse as pointer (for recording example trials)
+          $('html').css('cursor', 'pointer');
+          $('body').css('cursor', 'pointer');
+        }
         d3.select('#cursor').attr('display', 'block'); // show cursor
         d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
+        d3.select('#search_ring').attr('r',r);
       } else {
-        if (showPointer == 0) { // ensure mouse is hidden or not
-          // Hide the mouse from view 
-          $('html').css('cursor', 'none');
-          $('body').css('cursor', 'none');
-        } else {
+        if (showPointer == 1) { 
           // show mouse as pointer (for recording example trials)
           $('html').css('cursor', 'pointer');
           $('body').css('cursor', 'pointer');
         }
         d3.select('#cursor').attr('display', 'none'); // hide the cursor
+        d3.select('#search_ring').attr('stroke', search_color).attr('r',r).attr('display', 'block');
+      }
+
+      // Displaying searching too slow message if threshold is crossed
+      if (new Date() - begin > search_too_slow) {
+        d3.select('#search_too_slow').attr('display', 'block');
+      }
+
+    // Calculations done in SHOW_TARGETS phase
+    } else if (game_phase == SHOW_TARGETS) {
+      d3.select('#cursor').attr('display', 'none');
+      d3.select('#start').attr('fill', start_color);
+      d3.select('#search_too_slow').attr('display', 'none'); // turn off too slow message if it's there
+
+    // Flag cursor to display if within certain distance to center
+    } else if (game_phase == SEARCHING) {
+      if (r <= target_dist/8) {
+        cursor_show = true;
+      //} else if (new Date() - begin > search_too_slow){
+      //  cursor_show = true;
+      //  d3.select('#search_ring').attr('stroke','LightGray');
+      } else {
+        cursor_show = false;
+      }
+
+      // Display the cursor if flag is on 
+      if (cursor_show) {
+        if (showPointer == 1) { 
+          //show mouse as pointer (for recording example trials)
+          $('html').css('cursor', 'pointer');
+          $('body').css('cursor', 'pointer');
+        }
+        d3.select('#cursor').attr('display', 'block'); // show cursor
+        d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
+        d3.select('#search_ring').attr('r',r);
+      } else {
+        if (showPointer == 1) { 
+          // show mouse as pointer (for recording example trials)
+          $('html').css('cursor', 'pointer');
+          $('body').css('cursor', 'pointer');
+        }
+        d3.select('#cursor').attr('display', 'none'); // hide the cursor
+        d3.select('#search_ring').attr('stroke', search_color).attr('r',r).attr('display', 'block'); // show the search ring
       }
 
       // Displaying the start circle and trial count 
@@ -564,11 +628,9 @@ function gameSetup(data) {
       // Displaying searching too slow message if threshold is crossed
       if (new Date() - begin > search_too_slow) {
         d3.select('#search_too_slow').attr('display', 'block');
-        if (new Date() - begin > search_too_slow + 2000) {
-          // d3.select('#encouragement').attr('display', 'block')
-        }
       }
-      // Displaying the cursor during MOVING if targetfile indicates so for the reach
+
+    // Displaying the cursor during MOVING if targetfile indicates so for the reach
     } else if (game_phase == MOVING) {
       // d3.select('#search_ring').attr('display', 'none');
       if (online_fb[trial] || clamped_fb[trial]) {
@@ -608,7 +670,7 @@ function gameSetup(data) {
       moving_phase();
 
     // Move from moving to feedback phase once their reach intersects the target ring
-    } else if (game_phase == MOVING && r > target_dist) {
+    } else if (game_phase == MOVING && r >= target_dist) {
       fb_phase();
     }
   }
@@ -623,12 +685,24 @@ function gameSetup(data) {
     var f = 70;
   // bb_mess 1 --> b, 2 or 5 --> a, 3 or 6 --> space, 4 --> e
     if ((game_phase == BETWEEN_BLOCKS && (bb_mess == 5 || bb_mess == 2) && event.keyCode == a) || bb_mess == 0) {
+      clearTimeout(instrucTimeoutTimer);
+      // Start a timer for kicking the subject if they take too long to complete a trial
+      itiTimeoutTimer = setTimeout(itiTimedOut, ititimelimit); // kick subject if they take too long to finish this trial
       search_phase();
     } else if ((game_phase == BETWEEN_BLOCKS && bb_mess == 4 && event.keyCode == e)) {
+      clearTimeout(instrucTimeoutTimer);
+      // Start a timer for kicking the subject if they take too long to complete a trial
+      itiTimeoutTimer = setTimeout(itiTimedOut, ititimelimit); // kick subject if they take too long to finish this trial
       search_phase();
     } else if (game_phase == BETWEEN_BLOCKS && bb_mess == 1 && event.keyCode == b) {
-      search_phase();
+      clearTimeout(instrucTimeoutTimer);
+      // Start a timer for kicking the subject if they take too long to complete a trial
+      itiTimeoutTimer = setTimeout(itiTimedOut, ititimelimit); // kick subject if they take too long to finish this trial
+     search_phase();
     } else if (game_phase == BETWEEN_BLOCKS && event.keyCode == SPACE_BAR && (bb_mess == 3 || bb_mess == 6)) {
+      clearTimeout(instrucTimeoutTimer);
+      // Start a timer for kicking the subject if they take too long to complete a trial
+      itiTimeoutTimer = setTimeout(itiTimedOut, ititimelimit); // kick subject if they take too long to finish this trial
       search_phase();
     } else {
       console.log("premature end");
@@ -651,7 +725,7 @@ function gameSetup(data) {
 
     // Start circle becomes visible, target, cursor invisible
     d3.select('#start').attr('display', 'block').attr('fill', 'none');
-    d3.select('#target').attr('display', 'none').attr('fill', 'orange');
+    d3.select('#target').attr('display', 'none').attr('fill', target_color);
     d3.select('#cursor').attr('display', 'none');
     // d3.select('#search_ring').attr('display', 'block').attr('r', r);
     d3.select('#message-line-1').attr('display', 'none');
@@ -689,6 +763,8 @@ function gameSetup(data) {
     tgt_rad = Math.round(target_dist * target_size[trial]/80.0);
     d3.select('#target').attr('display', 'block').attr('cx', target_x).attr('cy', target_y).attr('r', tgt_rad);
     target_invisible = false;
+
+    d3.select('#search_too_slow').attr('display', 'none'); // get rid of too slow notification
   }
   
   // Phase when users are reaching to the target
@@ -763,8 +839,10 @@ function gameSetup(data) {
     // Start next trial after feedback time has elapsed
     if (if_slow) {
       if_slow = false;
+      d3.select('#too_slow_message').attr('display', 'none');
       fb_timer = setTimeout(next_trial, feedback_time_slow)
     } else {
+      d3.select('#too_slow_message').attr('display', 'none');
       fb_timer = setTimeout(next_trial, feedback_time);
     }
   }
@@ -775,6 +853,7 @@ function gameSetup(data) {
   function next_trial() {
     var d = new Date();
     var current_date = (parseInt(d.getMonth()) + 1).toString() + "/" + d.getDate() + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + "." + d.getSeconds() + "." + d.getMilliseconds();
+    clearTimeout(itiTimeoutTimer);
 
     cursor_show = false;
     // Uploading reach data for this reach onto the database
@@ -831,20 +910,29 @@ function gameSetup(data) {
       endGame();
     } else if (bb_mess || counter == 1) {
       console.log(bb_mess);
-      game_phase = BETWEEN_BLOCKS;    
+      game_phase = BETWEEN_BLOCKS;
+      //d3.select('#start').attr('display', 'none');    
       d3.select('#message-line-1').attr('display', 'block').text(messages[bb_mess][0]);
       d3.select('#message-line-2').attr('display', 'block').text(messages[bb_mess][1]);
       d3.select('#message-line-3').attr('display', 'block').text(messages[bb_mess][2]);
       d3.select('#message-line-4').attr('display', 'block').text(messages[bb_mess][3]);  
       d3.select('#too_slow_message').attr('display', 'none');
       d3.select('#trialcount').attr('display', 'block');
+      //d3.select('#start').attr('display', 'block');    
+
+      // initialize a timer for starting the experiment
+      instrucTimeoutTimer = setTimeout(instrucTimedOut, instrucTimeLimit); // kick subject if they take too long to read the instructions
+
       bb_counter += 1;
     } else {
+      // Start a timer for kicking the subject if they take too long to complete a trial
+      itiTimeoutTimer = setTimeout(itiTimedOut, ititimelimit); // kick subject if they take too long to finish this trial
+
       // Start next trial
       search_phase();
     }
   }
-}
+
 
 
 // Function used to upload reach data in the database
@@ -872,7 +960,7 @@ function badGame() {
   $('html').css('background-color', 'white');
 
   d3.select('#start').attr('display', 'none');
-  // d3.select('#search_ring').attr('display', 'none');
+  d3.select('#search_ring').attr('display', 'none');
   d3.select('#target').attr('display', 'none');
   d3.select('#cursor').attr('display', 'none');
   d3.select('#message-line-1').attr('display', 'none');
@@ -897,7 +985,7 @@ function endGame() {
   $('html').css('background-color', 'white');
 
   d3.select('#start').attr('display', 'none');
-  // d3.select('#search_ring').attr('display', 'none');
+  d3.select('#search_ring').attr('display', 'none');
   d3.select('#target').attr('display', 'none');
   d3.select('#cursor').attr('display', 'none');
   d3.select('#message-line-1').attr('display', 'none');
@@ -914,6 +1002,86 @@ function endGame() {
   
 }
 
+// Function that ends the game prematurely if the participant is taking >60 mins
+function gameTimedOut() {
+  game_phase = END_GAME;
+
+  closeFullScreen();
+  $('html').css('cursor', 'auto');
+  $('body').css('cursor', 'auto');
+  $('body').css('background-color', 'white');
+  $('html').css('background-color', 'white');
+
+  d3.select('#start').attr('display', 'none');
+  d3.select('#search_ring').attr('display', 'none');
+  d3.select('#target').attr('display', 'none');
+  d3.select('#cursor').attr('display', 'none');
+  d3.select('#message-line-1').attr('display', 'none');
+  d3.select('#message-line-2').attr('display', 'none');
+  d3.select('#message-line-3').attr('display', 'none');
+  d3.select('#message-line-4').attr('display', 'none');
+  d3.select('#too_slow_message').attr('display', 'none');
+  d3.select('#search_too_slow').attr('display', 'none');
+  // d3.select('#encouragement').attr('display', 'none');
+  d3.select('#countdown').attr('display', 'none');
+  d3.select('#trialcount').attr('display', 'none');
+
+  show('container-timeout', 'container-exp');
+}
+
+// Function that ends the game prematurely if the participant is taking >60 mins
+function itiTimedOut() {
+  game_phase = END_GAME;
+
+  closeFullScreen();
+  $('html').css('cursor', 'auto');
+  $('body').css('cursor', 'auto');
+  $('body').css('background-color', 'white');
+  $('html').css('background-color', 'white');
+
+  d3.select('#start').attr('display', 'none');
+  d3.select('#search_ring').attr('display', 'none');
+  d3.select('#target').attr('display', 'none');
+  d3.select('#cursor').attr('display', 'none');
+  d3.select('#message-line-1').attr('display', 'none');
+  d3.select('#message-line-2').attr('display', 'none');
+  d3.select('#message-line-3').attr('display', 'none');
+  d3.select('#message-line-4').attr('display', 'none');
+  d3.select('#too_slow_message').attr('display', 'none');
+  d3.select('#search_too_slow').attr('display', 'none');
+  // d3.select('#encouragement').attr('display', 'none');
+  d3.select('#countdown').attr('display', 'none');
+  d3.select('#trialcount').attr('display', 'none');
+
+  show('container-ititimeout', 'container-exp');
+}
+
+// Function that ends the game prematurely if the participant is taking >60 mins
+function instrucTimedOut() {
+  game_phase = END_GAME;
+
+  closeFullScreen();
+  $('html').css('cursor', 'auto');
+  $('body').css('cursor', 'auto');
+  $('body').css('background-color', 'white');
+  $('html').css('background-color', 'white');
+
+  d3.select('#start').attr('display', 'none');
+  d3.select('#search_ring').attr('display', 'none');
+  d3.select('#target').attr('display', 'none');
+  d3.select('#cursor').attr('display', 'none');
+  d3.select('#message-line-1').attr('display', 'none');
+  d3.select('#message-line-2').attr('display', 'none');
+  d3.select('#message-line-3').attr('display', 'none');
+  d3.select('#message-line-4').attr('display', 'none');
+  d3.select('#too_slow_message').attr('display', 'none');
+  d3.select('#search_too_slow').attr('display', 'none');
+  // d3.select('#encouragement').attr('display', 'none');
+  d3.select('#countdown').attr('display', 'none');
+  d3.select('#trialcount').attr('display', 'none');
+
+  show('container-instructimeout', 'container-exp');
+}
 
 document.addEventListener('DOMContentLoaded', function() {
 // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥

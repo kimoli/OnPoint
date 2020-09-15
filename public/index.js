@@ -87,24 +87,27 @@ var subject = {
 
 // Function used to check if all questions were filled in info form, if so, starts the experiment 
 function checkInfo(){
-  var actualCode = "mouse"; // **TODO: Update depending on the "code" set in index.html
+  var actualCode = "daisy"; // **TODO: Update depending on the "code" set in index.html
   var values = $("#infoform").serializeArray();
-  subject.id = values[0].value;
-  subject.age = values[1].value;
-  subject.sex = values[2].value;
-  subject.handedness = values[3].value;
-  subject.mousetype = values[4].value;
-  subject.returner = values[5].value;
-  var code = values[6].value;
-  subject.ethnicity = values[7].value;
-  subject.race = values[8].value;
+  // ADD SUBJECT ID HERE
+  randomval = Math.floor(Math.random() * 999999);
+  exptstring = "OKTTT";
+  subject.id = exptstring.concat(randomval.toString());
+  console.log(subject.id);
+  subject.age = values[0].value;
+  subject.sex = values[1].value;
+  subject.handedness = values[2].value;
+  subject.mousetype = values[3].value;
+  subject.returner = values[4].value;
+  var code = values[5].value;
+  subject.ethnicity = values[6].value;
+  subject.race = values[7].value;
   subject.ccd = Math.floor(Math.random()*(9999 - 1000 + 1) + 1000);
   document.getElementById("ccd").innerHTML = subject.ccd;
 
-  console.log(subject.id);
   console.log(subject.handedness);
   console.log(values)
-  if (!subject.id || !subject.age || !subject.sex || !subject.handedness || !subject.mousetype) {
+  if (!subject.age || !subject.sex || !subject.handedness || !subject.mousetype) {
     alert("Please fill out your basic information");
     return;
   } else if (actualCode.localeCompare(code) != 0) {

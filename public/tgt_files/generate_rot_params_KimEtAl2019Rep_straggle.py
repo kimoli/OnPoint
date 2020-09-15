@@ -70,7 +70,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         trialNums[i] = i + 1
         aimingLandmarks[i] = 0
         tgtDistance[i] = targetDistance
-        targetSize[i] = 3.5
+        targetSize[i] = 3.5 # 3.5 causes straddle (on my screen) with a 1.75 degree error
         if i < base_no_fb : # baseline acclimation phase without online cursor feedback, will have cycleDistribution[0] of these trials for every target
             onlineFB[i] = 0
             endpointFB[i] = 0
@@ -176,8 +176,8 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         json.dump(jsonData, outfile)
 
 
-nonDemoCycles = [2, 2, 2, 2]
-generateJSON(2, 8, nonDemoCycles, 1.75, 80, 1, 270) 
+nonDemoCycles = [2, 2, 10, 0]
+generateJSON(8, 14, nonDemoCycles, 1.75, 80, 1, 270)
 """
 The above call 'generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270)' will generate a target file with:
 - 2 targets
