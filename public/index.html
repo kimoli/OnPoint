@@ -91,6 +91,7 @@
       hr.class-1 { 
         border-top: 2px solid #000000; 
         } 
+      form label {font-weight: 300px;}
     </style>
 
   <!--</head>
@@ -233,26 +234,26 @@
 
     <!-- Initial Form for basic information 
     **TODO** Update questions accordingly to what kinds of information you require-->
-    <div id="container-info" style="display:none">
+    <div id="container-info" style="display:none" class="bodytext">
       <!-- CHANGE INDEX.JS CHECKINFO() IF MODIFIED -->
-      <h1>Basic Information</h1>
-      <hr>
+      <h1><b>Basic Information:</b></h1>
+      <hr class="class-1"/>
 
       <form id='infoform'>
           <div class="row question">
 
               <div class="questions" id="email">
-                  MTURK WorkerID: 
+                  MTURK WorkerID:<br>
                   <input id="email-input" type="text" name="email" value="">
               </div>
                   
               <div class="questions" id="age">
-                Age: 
+                Age:<br>
                   <input id="age" type="text" name="age" value="">
-                </div>
+              </div>
 
               <div class="questions" id="sex">
-                  Gender: 
+                  Gender:<br>
                   <select id="gender" name="gender">
                       <option value=""></option>
                       <option value="male">Male</option>
@@ -262,7 +263,7 @@
               </div>
 
               <div class="questions" id="handedness">
-                    Right or left handed: 
+                    Right or left handed:<br>
                 <select id="hand" name="hand">
                     <option value=""></option>
                     <option value="righth">Right</option>
@@ -272,7 +273,7 @@
               </div>
 
             <div class="questions" id="mouseQ">
-                What kind of mouse are you using? (Please only use trackpads): 
+                What kind of mouse are you using?:<br>
                 <select id="mousetype" name="mousetype">
                     <option value="">
                     <option value="optical">Optical mouse (standard mouse)</option>
@@ -282,18 +283,8 @@
                 </select>
             </div>
 
-            <div class="questions" id="monitorQ">
-                What kind of screen are you using to view this browser window? (Please sit directly in front of the screen): 
-                <select id="mousetype" name="mousetype">
-                    <option value="">
-                    <option value="monitor">Standalone monitor</option>
-                    <option value="laptop">Laptop screen</option>
-                    <option value="tablet">Tablet</option>
-                </select>
-            </div>
-
             <div class="questions" id="returner">
-                Have you done our experiments before? 
+                Have you done our experiments before?<br>
                 <select id="repeat" name="repeater">
                     <option value=""></option>
                     <option value="yes">Yes</option>
@@ -303,18 +294,18 @@
             </div>
 
             <div class="questions" id="startcode">
-                What's the code from the last page (Reread the instructions page if you don't know): 
+                What's the code from the last page (Reread the instructions page if you don't know):<br>
                 <input id="age" type="text" name="age" value="">
             </div>
 
             <hr>
 
             <p>
-                The following information is requested by the National Institute of Health. You are not <em>required</em>, but are encouraged to complete these.
+                The following information is requested by the National Institutes of Health. You are not <em>required</em>, but you are encouraged to complete these.
             </p>
             
             <div class="questions" id="ethnicity">
-                Ethnic Origin:  
+                Ethnic Origin:
                 <select id="ethnic" name="ethnic">
                     <option value="">
                     <option value="hispanic">Hispanic or Latino</option>
@@ -323,7 +314,7 @@
             </div>
 
             <div class="questions" id="racial origin">
-                Racial Origin:  
+                Racial Origin:
                 <select id="race" name="race">
                     <option value="">
                     <option value="indian/native">American Indian or Alaskan Native</option>
@@ -338,18 +329,15 @@
 
           </div>
         </form>
-        <hr>
+        <hr class="class-1"/>
         <center>
             <!-- <h1><b><em>Please enter fullscreen mode before you begin.</em></b></h1> //only for safari
             <hr> -->
-            <button type="button" id="back" value="back" class="btn btn-primary btn-lg previous" onClick="window.scrollTo(0,0);show('container-instructions2', 'container-info');">
+            <button type="button" id="back" value="back" class="pillbuttonLeft" onClick="window.scrollTo(0,0);show('container-instructions2', 'container-info');">
                 <span class="glyphicon glyphicon-arrow-left"></span> Back 
             </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button type="button" id="begin" value="next" class="btn btn-primary btn-lg continue" onClick="checkInfo();">
-                Begin Experiment <span class="glyphicon glyphicon-arrow-right"></span>
+            <button type="button" id="begin" value="next" class="pillbuttonRight" onClick="checkInfo();">
+                Begin Experiment!
             </button>
         </center>
     </div>

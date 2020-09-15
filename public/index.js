@@ -100,12 +100,7 @@ function checkInfo(){
   subject.race = values[8].value;
   subject.ccd = Math.floor(Math.random()*(9999 - 1000 + 1) + 1000);
   document.getElementById("ccd").innerHTML = subject.ccd;
-  if (noSave) {
-    show('container-exp', 'container-info');
-    openFullScreen();
-    startGame();
-    return;
-  }
+
   console.log(subject.id);
   console.log(subject.handedness);
   console.log(values)
@@ -121,6 +116,7 @@ function checkInfo(){
     openFullScreen();
     startGame();
   }
+
 }
 
 // Function used to create/update subject data in the database
