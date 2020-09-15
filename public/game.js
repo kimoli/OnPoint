@@ -95,6 +95,7 @@ var mousepos_y;
 var mousetm;
 var elapsedTime;
 var curTime;
+var showCursor;
 
 // Object to save reach data per reach, usage has become slightly obsolete but is still used as an intermediate object to store data before uploading to database
 var reachData = {
@@ -112,6 +113,8 @@ var reachData = {
   reach_feedback: '',
 }
 
+// specify at the top here whether mouse pointer will be shown or not
+var showPointer = 0;
 
 // Function used to start running the game
 // **TODO** Update the 'fileName' to path to targetfile
@@ -154,9 +157,15 @@ function gameSetup(data) {
   $('body').css('height', '98%');
   $('body').css('width', '100%');
 
-  // Hide the mouse from view 
-  $('html').css('cursor', 'none');
-  $('body').css('cursor', 'none');
+  if (showPointer == 0) {
+    // Hide the mouse from view 
+    $('html').css('cursor', 'none');
+    $('body').css('cursor', 'none');
+  } else {
+    // show mouse as pointer (for recording example trials)
+    $('html').css('cursor', 'pointer');
+    $('body').css('cursor', 'pointer');
+  }
 
   // SVG container from D3.js to hold drawn items
   svgContainer = d3.select("body").append("svg")
@@ -535,8 +544,15 @@ function gameSetup(data) {
         d3.select('#cursor').attr('display', 'block'); // show cursor
         d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
       } else {
-        $('html').css('cursor', 'none');
-        $('body').css('cursor', 'none'); //ensure mouse is hidden
+        if (showPointer == 0) { // ensure mouse is hidden or not
+          // Hide the mouse from view 
+          $('html').css('cursor', 'none');
+          $('body').css('cursor', 'none');
+        } else {
+          // show mouse as pointer (for recording example trials)
+          $('html').css('cursor', 'pointer');
+          $('body').css('cursor', 'pointer');
+        }
         d3.select('#cursor').attr('display', 'none'); // hide the cursor
       }
 

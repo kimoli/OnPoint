@@ -10,19 +10,19 @@
     connect-src * ws: wss:;" />
     <title>Reaching Experiment</title>
 
-    <link rel="stylesheet" href="/static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="/static/style.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="static/style.css" type="text/css" />
 
     <!-- update the version number as needed -->
-    <script src="/__/firebase/6.6.1/firebase-app.js"></script>
+    <script src="./__/firebase/6.6.1/firebase-app.js"></script>
     <!-- include only the Firebase features as you need -->
-    <script src="/__/firebase/6.6.1/firebase-auth.js"></script>
-    <script src="/__/firebase/6.6.1/firebase-database.js"></script>
-    <script src="/__/firebase/6.6.1/firebase-firestore.js"></script>
-    <script src="/__/firebase/6.6.1/firebase-messaging.js"></script>
-    <script src="/__/firebase/6.6.1/firebase-storage.js"></script>
+    <script src="./__/firebase/6.6.1/firebase-auth.js"></script>
+    <script src="./__/firebase/6.6.1/firebase-database.js"></script>
+    <script src="./__/firebase/6.6.1/firebase-firestore.js"></script>
+    <script src="./__/firebase/6.6.1/firebase-messaging.js"></script>
+    <script src="./__/firebase/6.6.1/firebase-storage.js"></script>
     <!-- initialize the SDK after all desired features are loaded -->
-    <script src="/__/firebase/init.js"></script>
+    <script src="./__/firebase/init.js"></script>
     
     <!-- <style media="screen">
       body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
@@ -39,118 +39,176 @@
       }
     -->
 
-    <style type="text/css">
-      <!--
-        .tab { margin-left: 40px; }
-      -->
+    <style>
+      .bodytext{padding: 10px;
+        max-width: 1000px;
+        margin: 0 auto;
+        margin-top: 30px;
+        font-family: Verdana}
+      .consent{background-color: rgb(245, 245, 245);
+        padding: 30px;
+        border: 1.5px solid black;
+        border-radius: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        margin-top: 30px;
+        font-family: Verdana;
+        line-height: 1.5}
+      .pillbuttonLeft {
+        border: 2px solid black;
+        color: black;
+        padding: 8px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16pt;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 30px;
+        box-shadow: 
+          0 2px 4px #fff, /*bottom external highlight*/
+          0 -1px 1px #666, /*top external shadow*/ 
+          inset 0 -2px 2px rgba(0,0,0,0.5), /*bottom internal shadow*/ 
+          inset 0 2px 2px rgba(255,255,255,0.8); /*top internal highlight*/;
+        float:left}
+      .pillbuttonRight {
+        border: 2px solid black;
+        color: black;
+        padding: 8px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16pt;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 30px;
+        box-shadow: 
+          0 2px 4px #fff, /*bottom external highlight*/
+          0 -1px 1px #666, /*top external shadow*/ 
+          inset 0 -2px 2px rgba(0,0,0,0.5), /*bottom internal shadow*/ 
+          inset 0 2px 2px rgba(255,255,255,0.8); /*top internal highlight*/;
+        float:right}
+      hr.class-1 { 
+        border-top: 2px solid #000000; 
+        } 
     </style>
+
   <!--</head>
   <body>
    <main class="container">
      <!-- Consent Page-->
     <div id="container-consent">
-      <div id="consent">
-          <h1><b><u>Welcome</u></b></h1>
-          <h2>but first, we need your consent to proceed...</h2> 
-          <hr />
-          <div class="legal well">
-              <p> 
-              We would like to invite you the take part in the following study named "Online Reaching Experiment: Aim For The Target!"
+      <div id="consent" class="bodytext">
+          <h1><b><i>Welcome</i></b></h1>
+          <h3>Please read the following terms and decide whether you would like to participate in this experiment:</h2> 
+          
+          <div class="consent">
+              <p><b>Title of Research: </b> Mechanical Turk Studies of Learning<br>
+                <b>Principal Investigator: </b> Jordan A. Taylor, PhD<br>                
+                <b>Principal Investigator's Department: </b> Psychology<br>
+                <br>
+                You are being invited to take part in a research study. Before you decide to participate in this study, it is important that you understand why the research is being done and what it will involve. Please take the time to read the following information carefully. Please ask the researcher if there is anything that is not clear or if you need more information.<br>
+                <br>
+                <b><u>Purpose of the Research:</u></b> <br>
+                You are being invited to participate in a study of motor and cognitive processes conducted in the Intelligent Performance and Adaptation Laboratory, directed by Professor Jordan Taylor, in the Department of Psychology at Princeton University. The research deals with how people acquire and produce certain motor skills and how visual and auditory information are used to guide actions.<br>
+                <br>
+                <b><u>Study Procedures:</u></b> <br>
+                You will be asked to respond to images on a screen using your keyboard and/or mouse. If you decide to participate in this project, please understand that your participation is voluntary and you have the right to withdraw your consent or discontinue participation at any time. <br>
+                Your total expected time commitment for this study may vary, but is at maximum one hour. <br>
+                <br>
+                <b><u>Benefits and Risks:</u></b> <br>
+                It is important that you understand that there is no direct benefit to you anticipated from your participation in this study.<br>
+                There is a slight chance you may feel frustrated or uncomfortable if the task is difficult for you to do, but you are free to discontinue your participation in the study if you choose. Please let us know if you feel fatigued or uncomfortable at any time during the experiment.<br>
+                <br>
+                <b><u>Alternatives:</u></b> <br>
+                The alternative to participating in this particular study is to not participate.<br>
+                <br>
+                <b><u>Confidentiality:</u></b> <br>
+                All records from this study will be kept confidential. Your responses will be kept private, and we will not include any information that will make it possible to identify you in any report we might publish. Research records will be stored securely in a locked cabinet and/or on password-protected computers. The research team will be the only party that will have access to your data.<br>
+                <br>
+                <b><u>Compensation:</u></b> <br>
+                You will be paid an honorarium for participation at a rate of $3 per hour.<br>
+                <br>
+                <b><u>Who to contact with questions:</u></b>
               </p>
-              <p>
-                This will take approximately 20 minutes, and you will be compensated $2.65 upon completion. <br>
-                Please understand that we <em>reserve the right to not compensate entries</em> that fail to follow instructions during reaches.
-                <br>  
-              </p>
-              <div id="consentForm">
-                  <!-- **TODO** Replace the consent form with your own consent form -->
-                  <iframe frameborder="1" id="consentForm" src="https://drive.google.com/file/d/1_jkO8vZMrpOrZMgEhpZuFgGcBjGE72Yg/preview"></iframe>
-              </div>
-              <button type="button" class="btn btn-default btn-sm" onClick="window.print();">
-              <span class="glyphicon glyphicon-print"></span> Print a copy of this
-              </button>
+              <p style="margin-left: 40px">1. PRINCIPAL INVESTIGATOR</p>
+              <p style="margin-left: 80px">Jordan Taylor, PhD<br>429 Peretsman-Scully Hall<br>office: (609) 258-4648<br>email: jordanat@princeton.edu</p>
+              <p style="margin-left: 40px">2. If you have questions regarding your rights as a research subject, or if problems arise which you do not feel you can discuss with the Investigator, please contact the Institutional Review Board at:</p>
+              <p style="margin-left: 80px">Assistant Director, Research Integrity and Assurance<br>Phone: (609) 258-8543<br>Email: irb@princeton.edu</p>
+              <p><b>By clicking the "I Agree" button below, I affirm that I understand the information that was presented and that:</b></p>
+              <p style="margin-left: 40px">1. My participation is voluntary, and I may withdraw my consent and discontinue participation in the project at any time.  My refusal to participate will not result in any penalty.</p>
+              <p style="margin-left: 40px">2. I do not waive any legal rights or release Princeton University, its agents, or you from liability for negligence.</p>
+            </br>
+            <button type="button" class="pillbuttonLeft" onClick="return show('decline-expt', 'container-consent');">
+              I do <u><b>NOT</b></u> consent to these terms.
+            </button>
+            <button type="button" class="pillbuttonRight" onClick="window.scrollTo(0,0);return show('container-instructions1', 'container-consent');">
+              I Agree 
+            </button>
+            </br></br>
           </div>
-          <hr />
-          <h4>If you agree and consent to these terms, please click "I Agree" to continue. Otherwise, please exit the page and return this HIT.</h4>
-          <br />
-          <center>
-              <button type="button" class="btn btn-danger btn-lg" onClick="return show('final-page', 'container-consent');">
-              <span class="glyphicon glyphicon-ban-circle"></span> I do <u><b>NOT</b></u> consent to these terms.
-              </button>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <button type="button" class="btn btn-primary btn-lg" onClick="return show('container-instructions1', 'container-consent');">
-              <span class="glyphicon glyphicon-ok"></span> I Agree 
-              </button>
-          </center>
+          
       </div>
     </div>
      
     <!-- Instruction Page 1-->
-    <div id="container-instructions1" style="display:none">
-        <h1>Online Reaching Experiment: Aim For The Target!</h1>
-        <hr>
-      <div class="instructions well">
-            <p>
-                You will be controlling a blue dot with your trackpad. The blue dot will sometimes be visible, and other times hidden. Even when you don't see the blue dot, the game will always be tracking its position.
-            </p>
-            <p> 
-                For this experiment, please use a <b>trackpad</b> to complete the task. Below is a video clip of an example participant completing the task using a trackpad.
-            </p>
-            <div class="row">
+    <div id="container-instructions1" style="display:none" class="bodytext">
+      <a href="#container-instructions1"></a>
+        <h1><b>Online Experiment: Aim For The Target!</b></h1>
+        <hr class="class-1"/>
+        <p>
+           You will be controlling a blue dot with your trackpad. The blue dot will sometimes be visible, and other times hidden. Even when you don't see the blue dot, the game will always be tracking its position.
+        </p>
+        <p> 
+          For this experiment, please use a <b>computer mouse</b> or <b>trackpad</b> to complete the task. Below is a video clip of an example participant completing the task using a trackpad.
+        </p>
+        <div class="row">
                 <!--
                 <div class="columnA">
                     <video controls autoplay loop muted src="" alt="User demonstration with mouse" style="width:100%"></video>
                 </div>
                 -->
                 
-                <div>
-                    <center>
-                    <video controls autoplay loop muted src="images/demo.MOV" alt="User demonstration with trackpad" style="width:100%"></video>
-                    </center>
-                </div>
-            </div>
-            <p>
-                <b><em>NOTE:</em></b> There are attention checks, so be sure to read their instructions thoroughly! Failing these checks will result in an incomplete HIT!
-            </p>
-          <script type="text/javascript">
-          //console.log(psiTurk.getInstructionIndicator())
-          </script>
-      </div>
-      <hr>
+          <div>
+            <center>
+              <video controls autoplay loop muted src="images/demo.MOV" alt="User demonstration with trackpad" style="width:100%"></video>
+            </center>
+          </div>
+        </div>
+        <p>
+          <b><em>NOTE:</em></b> There are attention checks, so be sure to read their instructions thoroughly! Failing these checks will result in an incomplete HIT!
+        </p>
+      <hr class="class-1"/>
       <center>
-            <button type="button" class="btn btn-primary btn-lg" onClick="return show('container-consent', 'container-instructions1');">
+            <button type="button" class="pillbuttonLeft" onClick="window.scrollTo(0,0);return show('container-consent', 'container-instructions1');">
             <span class="glyphicon glyphicon-arrow-left"></span> Back 
             </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button type="button" class="btn btn-primary btn-lg" onClick="return show('container-instructions2', 'container-instructions1');">
-            <span class="glyphicon glyphicon-arrow-right"></span> Next
+            <button type="button" class="pillbuttonRight" onClick="window.scrollTo(0,0);return show('container-instructions2', 'container-instructions1');">
+            Next <span class="glyphicon glyphicon-arrow-right"></span>
             </button>
         </center>
     </div>
     
     <!-- Instruction Page 2
         **TODO** Update the code in the instructions if necessary-->
-    <div id="container-instructions2" style="display:none">
-        <h1>What To Do</h1>
-        <hr>
-      <div class="instructions well">
+    <div id="container-instructions2" style="display:none" class="bodytext">
+      <h1><b>Instructions:</b></h1>
+      <hr class="class-1"/>
+
             <p>
                 There are two simple steps:
             </p>
-            <p class="tab">
+            <p style="margin-left: 40px">
                 1. Bring the blue dot to the center of your screen. The blue dot will initially be hidden, but it will be displayed once you get within a certain distance from the center.
             </p>
-            <p class = "tab">
+            <p style="margin-left: 40px">
                 2. Once the orange dot (your target) appears, slice through it <em>FAST</em> with the blue dot (visible or hidden).
             </p>
             <p>
                 <b>PLEASE READ:</b> After several trials, the blue dot will stop following the direction of your movements, and instead move on its own. When this happens, <b><em>ignore</em></b> the blue dot and continue moving <b>directly</b> to the target. 
                 Throughout the entire experiment, you should be moving the mouse <em>DIRECTLY</em> to the target. [Type "mouse" on the next page to indicate that you have read this].
             </p>
+            <br>
             <div class="row">
                 <center>
                     <div class="columnB2">
@@ -161,17 +219,14 @@
           <script type="text/javascript">
           //console.log(psiTurk.getInstructionIndicator())
           </script>
-      </div>
-      <hr>
+      
+      <hr class="class-1"/>
       <center>
-            <button type="button" class="btn btn-primary btn-lg" onClick="return show('container-instructions1', 'container-instructions2');">
+            <button type="button" class="pillbuttonLeft" onClick="window.scrollTo(0,0);return show('container-instructions1', 'container-instructions2');">
             <span class="glyphicon glyphicon-arrow-left"></span> Back 
             </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button type="button" class="btn btn-primary btn-lg" onClick="return show('container-info', 'container-instructions2');">
-            <span class="glyphicon glyphicon-arrow-right"></span> Next
+            <button type="button" class="pillbuttonRight" onClick="window.scrollTo(0,0);return show('container-info', 'container-instructions2'); window.scrollTo(0,0);">
+            Next <span class="glyphicon glyphicon-arrow-right"></span>
             </button>
         </center>
     </div>
@@ -190,11 +245,11 @@
                   MTURK WorkerID: 
                   <input id="email-input" type="text" name="email" value="">
               </div>
-            
+                  
               <div class="questions" id="age">
-                  Age: 
+                Age: 
                   <input id="age" type="text" name="age" value="">
-              </div>
+                </div>
 
               <div class="questions" id="sex">
                   Gender: 
@@ -287,7 +342,7 @@
         <center>
             <!-- <h1><b><em>Please enter fullscreen mode before you begin.</em></b></h1> //only for safari
             <hr> -->
-            <button type="button" id="back" value="back" class="btn btn-primary btn-lg previous" onClick="show('container-instructions2', 'container-info');">
+            <button type="button" id="back" value="back" class="btn btn-primary btn-lg previous" onClick="window.scrollTo(0,0);show('container-instructions2', 'container-info');">
                 <span class="glyphicon glyphicon-arrow-left"></span> Back 
             </button>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -380,7 +435,17 @@
 
                     <h2>If you do not receive compensation in 5 business days please email kim.olivia.a@gmail.com.</h2>
                     <h2>Your completion code is: <span id="ccd"></span> </h2>
-                    <h2>You have a wonderful life now.</h2>
+        </div>
+    </div>
+
+    <!-- Person did not consent -->
+    <div id="decline-expt" style="display:none">
+        <div class="bodytext">
+                    <h1>You did not consent to participate in the experiment.</h1>
+                    <hr />
+                    <p>Thank you for reading the consent form and considering your rights as a reasearch participant.</p>
+                    <p>This HIT has been aborted.</p>
+                    <p>If you have terminated the experiment in error, you may refresh this page to revisit the consent form.</p>
         </div>
     </div>
    </main>

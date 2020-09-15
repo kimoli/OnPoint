@@ -5,7 +5,7 @@ body {
     background-color: white;
     color: black;
     font-weight: 300; 
-    font-size: 18pt;
+    font-size: 16pt;
 }
 
 
@@ -33,7 +33,7 @@ h1 {
 /* these are all the same for now, but easy to modify individually */
 #container-ad, #container-error, #container-consent, #container-instructions1, #container-instructions2,  #container-instructions3, #container-questionnaire, #container-info {
     background: white;
-    margin: 20px;
+    /*margin: 20px;*/
 }
 
 #container-exp{
