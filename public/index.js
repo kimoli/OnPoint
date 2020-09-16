@@ -4,13 +4,18 @@ This is all the non-game related content. E.g., collecting participant data, sta
 
 // Set to 'true' if you wish to only test the front-end (will not access databases)
 // **TODO** Make sure this is set to false before deploying!
-const noSave = true;
+const noSave = false;
 
 
 // Variables used for setting up the game
 var screen_height;
 var screen_width;
 var elem;
+var ccds;
+var ccdx;
+
+// Possible completion codes
+ccds = ['forum', 'aisle', 'stamp', 'patch', 'horse', 'angle', 'light', 'onion', 'panel', 'marsh'];
 
 /* TEMPORARY USE OF ORIGINAL CODE TO TEST THINGS OUT */
 try {
@@ -81,18 +86,18 @@ var subject = {
   ethnicity: null,
   race: null,
   clampQ: null,
-  comments: null,
-  ccd: null
+  comments: null
 }
 
 // Function used to check if all questions were filled in info form, if so, starts the experiment 
 function checkInfo(){
-  var actualCode = "daisy"; // **TODO: Update depending on the "code" set in index.html
+  var actualCode = "rain"; // **TODO: Update depending on the "code" set in index.html
   var values = $("#infoform").serializeArray();
   // ADD SUBJECT ID HERE
-  randomval = Math.floor(Math.random() * 999999);
-  exptstring = "OKTTT";
-  subject.id = exptstring.concat(randomval.toString());
+  randomval = Math.floor(Math.random() * 999999999);
+  exptstring = "OKTTT_";
+  exptstring = exptstring.concat(randomval.toString())
+  subject.id = exptstring.concat('_');
   console.log(subject.id);
   subject.age = values[0].value;
   subject.sex = values[1].value;
@@ -102,8 +107,8 @@ function checkInfo(){
   var code = values[5].value;
   subject.ethnicity = values[6].value;
   subject.race = values[7].value;
-  subject.ccd = Math.floor(Math.random()*(9999 - 1000 + 1) + 1000);
-  document.getElementById("ccd").innerHTML = subject.ccd;
+  ccdx = Math.floor(Math.random()*10)-1;
+  document.getElementById("ccd").innerHTML = ccds[ccdx];
 
   console.log(subject.handedness);
   console.log(values)
@@ -141,8 +146,8 @@ function createSubject(collection, subject) {
 // Function used to save the feedback from the final HTML page
 function saveFeedback() {
   var values = $("#feedbackForm").serializeArray();
-  // subject.clampQ = values[0].value;
-  subject.comments = values[0].value;
+  subject.clampQ = values[0].value;
+  subject.comments = values[1].value;
   // Currently not employing the clampQ question, but can be used
   // if(!subject.clampQ) {
   //   alert("Please answer the first question! You can leave the second question blank.")

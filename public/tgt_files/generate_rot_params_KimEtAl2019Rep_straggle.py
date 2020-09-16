@@ -172,12 +172,12 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         print ("value: ", jsonData[key])
         print ("")
 
-    with open('KimEtAl2019Rep_straddle.json', 'w') as outfile:
+    with open('KimEtAl2019Rep_straddleCW.json', 'w') as outfile:
         json.dump(jsonData, outfile)
 
 
 nonDemoCycles = [2, 2, 10, 0]
-generateJSON(8, 14, nonDemoCycles, 1.75, 80, 1, 270)
+generateJSON(8, 14, nonDemoCycles, -1.75, 80, 1, 270)
 """
 The above call 'generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270)' will generate a target file with:
 - 2 targets

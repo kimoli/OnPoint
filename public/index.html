@@ -179,7 +179,9 @@
           </div>
         </div>
         <p>
-          <b><em>NOTE:</em></b> There are attention checks, so be sure to read their instructions thoroughly! Failing these checks will result in an incomplete HIT!
+          <b><em>NOTES:</em></b> <br>
+          &nbsp;&nbsp;&nbsp;&nbsp;1. There are attention checks, so be sure to read their instructions thoroughly! Failing these checks will result in an incomplete HIT.<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;2. The experiment will be terminated if you do not respond to the given instructions or move the mouse to the target in a timely manner. This will result in an imcomplete HIT.
         </p>
       <hr class="class-1"/>
       <center>
@@ -197,50 +199,47 @@
     <div id="container-instructions2" style="display:none" class="bodytext">
       <h1><b>Instructions:</b></h1>
       <hr class="class-1"/>
-            <p>On each trial, your cursor will be displayed as a green dot. Aim your mouse movements to hit the pink target with the green dot.</p>
-            <div class="row">
-                <center>
-                    <div class="columnB2">
-                        <video controls autoplay loop muted src="images/greenToPink.mov" alt="Game image" style="width:100%"></video>
-                    </div>
-                </center>
-            </div>
-
-            <p>
-                To do a trial:
-            </p>
+            <p>There are three simple steps to get through the experiment:</p>
+            
             <p style="margin-left: 40px">
-                Bring your mouse pointer to the center of your screen.
+                1. Use your mouse/trackpad to bring the green dot to the center of your screen.
             </p>
-            <p style="margin-left: 80px"> 1. The mouse pointer and the green dot will initially be hidden, and a yellow ring will indicate the distance between your cursor and the center of the screen (empty green circle).<br>
+            <p style="margin-left: 80px"> A. The green dot will initially be hidden, and a yellow ring will indicate the distance between your cursor and the center of the screen (empty green circle). In the video below, a white mouse pointer is visible for illustrative purposes, but the pointer will not be visible during the experiment.<br>
               <div class="row">
                 <center>
                     <div class="columnB2">
-                        <video controls autoplay loop muted src="images/greenCenterYellowSearch_dotHidden.mov" alt="Game image" style="width:100%"></video>
+                        <video controls autoplay loop muted src="images/greenCenterYellowSearch_dotHidden.mp4" alt="Game image" style="width:100%"></video>
                     </div>
                 </center>
               </div><br>
-              2. When the cursor is within a certain distance from the center, the green dot will become visible again.<br>
+            </p>
+            <p style="margin-left: 80px"> B. When the cursor is within a certain distance from the center, the green dot will become visible. When the cursor is at the center of the screen, the center circle will be filled.<br>
               <div class="row">
                 <center>
                     <div class="columnB2">
-                        <video controls autoplay loop muted src="images/greenCenterYellowSearch_dotShown.mov" alt="Game image" style="width:100%"></video>
+                        <video controls autoplay loop muted src="images/greenCenterYellow_findCenter.mp4" alt="Game image" style="width:100%"></video>
                     </div>
                 </center>
               </div><br>
-              3. When the cursor is at the center, the center circle will be filled.<br>
+            </p>
+            
+            <p style="margin-left: 40px">
+              2. Once the pink dot (your target) appears, slice through it <em>FAST</em> with the green dot (visible or hidden).<br>
               <div class="row">
                 <center>
                     <div class="columnB2">
-                        <video controls autoplay loop muted src="images/greenCenter_circleFilled.mov" alt="Game image" style="width:100%"></video>
+                        <video controls autoplay loop muted src="images/greenToPink_singleTrial.mp4" alt="Game image" style="width:100%"></video>
                     </div>
                 </center>
               </div><br>
-              4. Once the pink dot (your target) appears, slice through it <em>FAST</em> with the green dot (visible or hidden).<br>
+            </p>
+
+            <p style="margin-left: 40px">
+              3. Repeat from step 1 until you have completed all 115 trials (trial counter shown in bottom left corner of the screen).<br>
               <div class="row">
                 <center>
                     <div class="columnB2">
-                        <video controls autoplay loop muted src="images/greenToPink.mov" alt="Game image" style="width:100%"></video>
+                        <video controls autoplay loop muted src="images/greenToPink_multitrial.mp4" alt="Game image" style="width:100%"></video>
                     </div>
                 </center>
               </div><br>
@@ -248,7 +247,7 @@
             
             <p>
                 <b>PLEASE READ:</b> After several trials, the green dot will stop following the direction of your movements, and instead move on its own. When this happens, <b><em>ignore</em></b> the green dot and continue moving <b>directly</b> to the pink target. 
-                Throughout the entire experiment, you should be moving the mouse <em>DIRECTLY</em> to the pink target. [Type "daisy" on the next page to indicate that you have read this].
+                Throughout the entire experiment, you should be moving the mouse <em>DIRECTLY</em> to the pink target. [Select "rain" on the next page to indicate that you have read this].
             </p>
             
           <script type="text/javascript">
@@ -346,7 +345,23 @@
 
             <div class="questions" id="startcode">
                 What's the code from the last page (Reread the instructions page if you don't know):<br>
-                <input id="age" type="text" name="age" value="">
+                <select id="codecheck" name="codecheck">
+                    <option value=""></option>
+                    <option value="brain">brain</option>
+                    <option value="cane">cane</option>
+                    <option value="lainn">lain</option>
+                    <option value="main">main</option>
+                    <option value="mane">mane</option>
+                    <option value="pane">pane</option>
+                    <option value="plain">plain</option>
+                    <option value="rain">rain</option>
+                    <option value="stain">stain</option>
+                    <option value="thane">thane</option>
+                    <option value="vain">vain</option>
+                    <option value="vane">vane</option>
+                    <option value="vein">vein</option>
+                    <option value="wane">wane</option>
+                </select>
             </div>
 
             <hr>
@@ -400,47 +415,40 @@
     <!-- Thank you page 
         **TODO** Update the completion code if necessary-->
     <div id="container-not-an-ad" style="display:none" class="bodytext">
-            <h1>Thanks for your participation!</h1>
+            <h1><b>Thanks for your participation!</b></h1>
             <hr class="class-1"/>
 
-            <h2>Now just one more question and you're done!</h2>
+            <h2>Now just one more question and then you're done!</h2>
             
             <form id="feedbackForm">
-                <!-- This question is currently not employed.
+                
                 <div class="question" id="contact">
-                    When the white dot was not under your control, did it touch the target?
+                    When the green dot was not under your control, how did it touch the target?
                     <select id="contactq" name="contact">
                         <option value="">
-                        <option value="yes">Yes, the white dot hit/touched the target</option>
-                        <option value="no">No, the white dot never came in contact with the target</option>
+                        <option value="straddle">The green dot was partially on the target.</option>
+                        <option value="hit">The green dot was completely on the target.</option>
+                        <option value="miss">The green dot did not touch the target.</option>
                     </select>
                 </div>
-                -->
+                
 
                 <div class="question" id="feedback">
-                    Let us know if you had any issues with this experiment! 
+                    Did you have any issues with the experiment? 
                     <input id="feedback" type="text" name="feedback" value="">
                 </div>
             </form>
             <center>
-                <!-- <h1><b><em>Please enter fullscreen mode before you begin.</em></b></h1> //only for safari
-                <hr> -->
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <button type="button" id="end" value="final" onClick="saveFeedback();">
-                    Submit 
-                </button>
-            </center>
-            <h2>If you do not receive compensation in 3 days please email oakim@princeton.edu.</h2>
-            <h2>Your completion code is: <span id="ccd"></span> </h2>
-            <h2>You have a wonderful life now.</h2>
+            <button type="button" id="end" value="final" onClick="saveFeedback();">
+                Submit 
+            </button>
+          </center>
     </div>
 
     <!-- Ended early page -->
     <div id="container-failed" style="display:none">
         <div class="bodytext">
-                    <h1>Oh no!</h1>
+                    <h1><b>Oh no!</b></h1>
                     <hr />
                     <p>If you are seeing this page it means you did not pass an attention or understanding test.</p>
                     <p>This task requires your full attention, thus we kindly ask you to exit and restart this HIT.</p>
@@ -455,7 +463,7 @@
     <!-- Timeout page -->
     <div id="container-timeout" style="display:none">
         <div class="bodytext">
-                    <h1>Experiment Timed Out</h1>
+                    <h1><b>Experiment Timed Out</b></h1>
                     <hr class="class-1"/>
                     <p>If you are seeing this page it means you have exceeded the time limit (1 hour) for completing this experiment.</p>
                     <p>We're sorry for this inconvenience.</p>
@@ -465,7 +473,7 @@
     <!-- ITI timeout page -->
     <div id="container-ititimeout" style="display:none">
         <div class="bodytext">
-                    <h1>Are you still there?</h1>
+                    <h1><b>Are you still there?</b></h1>
                     <hr class="class-1"/>
                     <p>If you are seeing this page it means you haven't moved the mouse beyond the target radius in >2 minutes.</p>
                     <p>This task requires your full attention, thus we kindly ask you to exit and restart this HIT.</p>
@@ -477,7 +485,7 @@
     <!-- Instruction timeout page -->
     <div id="container-instructimeout" style="display:none">
         <div class="bodytext">
-                    <h1>Are you still there?</h1>
+                    <h1><b>Are you still there?</b></h1>
                     <hr class="class-1"/>
                     <p>If you are seeing this page it means you spent >1 minute reading the task instructions.</p>
                     <p>This task requires your full attention, thus we kindly ask you to exit and restart this HIT.</p>
@@ -489,11 +497,12 @@
     <!-- Final Page -->
     <div id="final-page" style="display:none" class="bodytext">
         
-                    <h1>Your responses have been saved, thank you!</h1>
+                    <h1><b>Your responses have been saved, thank you!</b></h1>
                     <hr class="class-1"/>
 
                     <h2>If you do not receive compensation in 3 days please email oakim@princeton.edu.</h2>
                     <h2>Your completion code is: <span id="ccd"></span> </h2>
+                    <h2>Goodbye :)</h2>
         
     </div>
 

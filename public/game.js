@@ -13,7 +13,6 @@ Remember to update necessary fields before starting the game. All fields that re
 var subjTrials = {
   id: null,
   name: null,
-  experimentID: null,
   trialNum: null,
   currentDate: null,
   target_angle: null,
@@ -24,7 +23,10 @@ var subjTrials = {
   mt: null,
   search_time: null,
   reach_feedback: null,
-  group_type: null
+  group_type: null,
+  posx: null,
+  posy: null,
+  postm: null
 }
 
 
@@ -102,6 +104,14 @@ var itiTimeoutTimer;
 var instrucTimeoutTimer;
 var instrucTimeLimit;
 var ititimelimit;
+var positer;
+var loopiter;
+var toSave_x;
+var toSave_y;
+var toSave_tm;
+var angleadd;
+var tempiter;
+var grp;
 
 // Object to save reach data per reach, usage has become slightly obsolete but is still used as an intermediate object to store data before uploading to database
 var reachData = {
@@ -120,27 +130,32 @@ var reachData = {
 }
 
 // specify at the top here whether mouse pointer will be shown or not
-var showPointer = 1;
+//var showPointer = 0;
 
 // Function used to start running the game
 // **TODO** Update the 'fileName' to path to targetfile
 function startGame() {
   // Implement following commented code for uniform random selection of target files
-  // d = Math.floor(Math.random() * 5);
-  // if (d == 0) {
-  //   fileName = "/static/js/multiclamp05052020V1.json";
-  // } else if (d == 1) {
-  //   fileName = "/static/js/multiclamp05052020V2.json"; 
-  // } else if (d == 2) {
-  //   fileName = "/static/js/multiclamp05052020V3.json";
-  // } else if (d == 3) {
-  //   fileName = "/static/js/multiclamp05052020V4.json";
-  // } else {
-  //   fileName = "/static/js/multiclamp05052020V5.json";
-  // }
-  fileName = "tgt_files/KimEtAl2019Rep_hit.json"
+   d = Math.floor(Math.random() * 4);
+   if (d == 0) {
+     fileName = "tgt_files/KimEtAl2019Rep_hit.json";
+     grp = 'h_CCW';
+   } else if (d == 1) {
+     fileName = "tgt_files/KimEtAl2019Rep_straddle.json"; 
+     grp = 's_CCW';
+   } else if (d == 2) {
+     fileName = "tgt_files/KimEtAl2019Rep_hitCW.json";
+     grp = 'h_CW'; 
+   } else {
+     fileName = "tgt_files/KimEtAl2019Rep_straddleCW.json";
+     grp = 's_CW';
+   }
+
+  // Implement following commented code to select a single target file
+  //fileName = "tgt_files/KimEtAl2019Rep_hit.json"
+
   subject.tgt_file = fileName;
-  subjTrials.group_type = "null"; // **TODO** update group_type to manage the groups
+  subjTrials.group_type = grp; // **TODO** update group_type to manage the groups
   $.getJSON(fileName, function(json){
       target_file_data = json;
       gameSetup(target_file_data);
@@ -163,15 +178,16 @@ function gameSetup(data) {
   $('body').css('height', '98%');
   $('body').css('width', '100%');
 
-  if (showPointer == 0) {
+  // UNCOMMENT HERE IF YOU WANT TO SHOW POINTER TO MAKE AN ILLUSTRATIVE VIDEO
+  //if (showPointer == 0) {
     // Hide the mouse from view 
     $('html').css('cursor', 'none');
     $('body').css('cursor', 'none');
-  } else {
+  //} else {
     // show mouse as pointer (for recording example trials)
-    $('html').css('cursor', 'pointer');
-    $('body').css('cursor', 'pointer');
-  }
+  //  $('html').css('cursor', 'pointer');
+  //  $('body').css('cursor', 'pointer');
+  //}
 
   // SVG container from D3.js to hold drawn items
   svgContainer = d3.select("body").append("svg")
@@ -252,9 +268,13 @@ function gameSetup(data) {
   cursor_color = 'lime';
   search_color = 'yellow';
 
-  mousepos_x = [start_x]; // initialize as start position
-  mousepos_y = [start_y];
-  mousetm = [0];
+  mousepos_x = new Array(200).fill(-1); // only take up to 1 s of data
+  mousepos_y = new Array(200).fill(-1);
+  mousepos_x[0] = [start_x];
+  mousepos_y[0] = [start_y];
+  mousetm = new Array(200).fill(-1);
+  mousetm[0] = [0];
+  positer = 1;
   elapsedTime = NaN; // initialize as NaN, but only update when checking the time in the "MOVING" phase
   curTime = NaN;
 
@@ -322,40 +342,40 @@ function gameSetup(data) {
         .attr('x', screen_width/2)
         .attr('y', screen_height/2 - line_size)
         .attr('fill', 'white')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', 'Verdana')
         .attr('font-size', message_size)
         .attr('id', 'message-line-1')
         .attr('display', 'block')
-        .text('Move the blue dot to the center.');
+        .text('Move the green dot to the center.');
 
   svgContainer.append('text')
         .attr('text-anchor', 'middle')
         .attr('x', screen_width/2)
         .attr('y', screen_height/2)
         .attr('fill', 'white')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', 'Verdana')
         .attr('font-size', message_size)
         .attr('id', 'message-line-2')
         .attr('display', 'block')
-        .text('The blue dot will be visible during your reach.');
+        .text('The green dot will be visible during your reach.');
 
   svgContainer.append('text')
         .attr('text-anchor', 'middle')
         .attr('x', screen_width/2)
         .attr('y', screen_height/2 + line_size)
         .attr('fill', 'white')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', 'Verdana')
         .attr('font-size', message_size)
         .attr('id', 'message-line-3')
         .attr('display', 'block')
-        .text('Quickly move your blue dot to the target.');
+        .text('Quickly move your green dot to the target.');
 
   svgContainer.append('text')
         .attr('text-anchor', 'middle')
         .attr('x', screen_width/2)
         .attr('y', screen_height/2 + line_size * 2)
         .attr('fill', 'white')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', 'Verdana')
         .attr('font-size', message_size)
         .attr('id', 'message-line-4')
         .attr('display', 'block')
@@ -368,24 +388,24 @@ function gameSetup(data) {
         .attr('x', screen_width/2)
         .attr('y', screen_height/2)
         .attr('fill', 'red')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', 'Verdana')
         .attr('font-size', message_size)
         .attr('id', 'too_slow_message')
         .attr('display', 'none')
         .text('Move Faster'); 
 
   // Parameters and display for when users take too long to locate the center
-  search_too_slow = 5000; // in milliseconds
+  search_too_slow = 10000; // in milliseconds
   svgContainer.append('text')
         .attr('text-anchor', 'middle')
         .attr('x', screen_width/2)
         .attr('y', screen_height/3 * 2)
         .attr('fill', 'white')
-        .attr('font-family', 'san-serif')
+        .attr('font-family', 'Verdana')
         .attr('font-size', message_size)
         .attr('id', 'search_too_slow')
         .attr('display', 'none')
-        .text('The yellow circle gets smaller as your cursor approaches the starting circle (blue).');
+        .text('The yellow circle gets smaller as your cursor approaches the starting circle (green).');
 
   // Parameters and display for the reach counter located at the bottom right corner
   counter = 1;
@@ -467,6 +487,10 @@ function gameSetup(data) {
 
   //setTimeout(gameTimedOut, 30000); // 30s timeout for testing
   setTimeout(gameTimedOut, 3600000); // one hour timeout
+
+  // have the targets centered about random locations
+  angleadd = Math.floor(Math.random()*360)+1;
+
 }
 
   /********************
@@ -482,10 +506,11 @@ function gameSetup(data) {
   function update_cursor(event) {
     var eventDoc, doc, body, pageX, pageY; // These variables are now bsolete
 
-    // Record the current mouse location
+    // Record the current mouse location, and the current time
     event = event || window.event; 
     hand_x = event.pageX;
     hand_y = event.pageY;
+    curTime = new Date();
 
     // Update radius between start and hand location
     r = Math.sqrt(Math.pow(start_x - hand_x, 2) + Math.pow(start_y - hand_y, 2));
@@ -501,19 +526,19 @@ function gameSetup(data) {
         Jump target away from clamp by target_jump[trial] if value is neither 0 || 1
       */
       if (target_jump[trial] == 1) {
-        target_x = start_x + target_dist * Math.cos((target_angle[trial] + rotation[trial]) * Math.PI/180);
-        target_y = start_y - target_dist * Math.sin((target_angle[trial] + rotation[trial]) * Math.PI/180);
+        target_x = start_x + target_dist * Math.cos((target_angle[trial] + angleadd + rotation[trial]) * Math.PI/180);
+        target_y = start_y - target_dist * Math.sin((target_angle[trial] + angleadd  + rotation[trial]) * Math.PI/180);
         d3.select('#target').attr('cx', target_x).attr('cy', target_y).attr('display', 'block');
       } else if (target_jump[trial] != 0) {
-        target_x = start_x + target_dist * Math.cos((target_angle[trial] + target_jump[trial]) * Math.PI/180);
-        target_y = start_y - target_dist * Math.sin((target_angle[trial] + target_jump[trial]) * Math.PI/180);
+        target_x = start_x + target_dist * Math.cos((target_angle[trial] + angleadd  + target_jump[trial]) * Math.PI/180);
+        target_y = start_y - target_dist * Math.sin((target_angle[trial] + angleadd  + target_jump[trial]) * Math.PI/180);
         d3.select('#target').attr('cx', target_x).attr('cy', target_y).attr('display', 'block');
       }
 
       // Updating cursor locations depending on clamp, fb, no_fb
       if (clamped_fb[trial]) { // Clamped feedback
-        cursor_x = start_x + r * Math.cos((target_angle[trial] + rotation[trial]) * Math.PI/180);
-        cursor_y = start_y - r * Math.sin((target_angle[trial] + rotation[trial]) * Math.PI/180);
+        cursor_x = start_x + r * Math.cos((target_angle[trial] + angleadd  + rotation[trial]) * Math.PI/180);
+        cursor_y = start_y - r * Math.sin((target_angle[trial] + angleadd  + rotation[trial]) * Math.PI/180);
       } else if (online_fb[trial]) { // Rotated feedback (vmr)
         cursor_x = start_x + r * Math.cos((hand_angle + rotation[trial]) * Math.PI/180);
         cursor_y = start_y - r * Math.sin((hand_angle + rotation[trial]) * Math.PI/180);
@@ -522,18 +547,14 @@ function gameSetup(data) {
         cursor_y = hand_y;
       }
 
-      // Record cursor location whenever movement is detected
-      curTime = new Date(); // begin is a timestamp that gets reset once the cursor starts moving
-      elapsedTime = curTime.getTime() - begin.getTime();
-      //if (elapsedTime % 5 == 0) { // sample every 5 ms -- this seems too slow somehow
-        //console.log(elapsedTime); // debugging message to track when the script enters this if statement
-        /*
-          Code here will only execute every 5th ms that has mouse movement. So, if the user pauses for some reason, some 5 ms time periods will be skipped
-        */
-      //}
-      mousepos_x.push(hand_x);
-      mousepos_y.push(hand_y);
-      mousetm.push(elapsedTime);
+      // Record cursor location whenever movement is detected, but only take up to 200 samples
+      if (positer<=199) {
+        elapsedTime = curTime.getTime() - begin.getTime();  // begin is a timestamp that gets reset once the cursor starts moving
+        mousepos_x[positer]= hand_x;
+        mousepos_y[positer]=hand_y;
+        mousetm[positer]=elapsedTime;
+        positer = positer + 1;
+      }
 
     } else {
       cursor_x = hand_x;
@@ -541,46 +562,48 @@ function gameSetup(data) {
     }
 
     // Calculations done in the HOLDING phase
-    // note from OK: not totally sure why this has to be different from the searching phase
     if (game_phase == HOLDING) {
       if (r <= start_radius) { // Fill the center if within start radius
         d3.select('#cursor').attr('display', 'none'); 
         d3.select('#start').attr('fill', start_color);
         d3.select('#search_ring').attr('r',r).attr('display', 'none');
-      }
-
-      if (r <= target_dist/8) {
-        cursor_show = true;
-      //} else if (new Date() - begin > search_too_slow){
-      //  cursor_show = true;
-      //  d3.select('#search_ring').attr('stroke','LightGray');
       } else {
-        cursor_show = false;
-      }
-
-      // Display the cursor if flag is on 
-      if (cursor_show) {
-        if (showPointer == 1) { 
-          //show mouse as pointer (for recording example trials)
-          $('html').css('cursor', 'pointer');
-          $('body').css('cursor', 'pointer');
+        d3.select('#start').attr('fill', 'none');
+        if (r <= target_dist/8) {
+          cursor_show = true;
+        //} else if (new Date() - begin > search_too_slow){
+        //  cursor_show = true;
+        //  d3.select('#search_ring').attr('stroke','LightGray');
+        } else {
+          cursor_show = false;
         }
-        d3.select('#cursor').attr('display', 'block'); // show cursor
-        d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
-        d3.select('#search_ring').attr('r',r);
-      } else {
-        if (showPointer == 1) { 
-          // show mouse as pointer (for recording example trials)
-          $('html').css('cursor', 'pointer');
-          $('body').css('cursor', 'pointer');
-        }
-        d3.select('#cursor').attr('display', 'none'); // hide the cursor
-        d3.select('#search_ring').attr('stroke', search_color).attr('r',r).attr('display', 'block');
-      }
 
-      // Displaying searching too slow message if threshold is crossed
-      if (new Date() - begin > search_too_slow) {
-        d3.select('#search_too_slow').attr('display', 'block');
+        // Display the cursor if flag is on 
+        if (cursor_show) {
+          // UNCOMMENT HERE IF YOU WANT TO SHOW POINTER TO MAKE AN ILLUSTRATIVE VIDEO
+          //if (showPointer == 1) { 
+            ////show mouse as pointer (for recording example trials)
+            //$('html').css('cursor', 'pointer');
+            //$('body').css('cursor', 'pointer');
+          //}
+          d3.select('#cursor').attr('display', 'block'); // show cursor
+          d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
+          d3.select('#search_ring').attr('r',r);
+        } else {
+          // UNCOMMENT HERE IF YOU WANT TO SHOW POINTER TO MAKE AN ILLUSTRATIVE VIDEO
+          //if (showPointer == 1) { 
+            //// show mouse as pointer (for recording example trials)
+            //$('html').css('cursor', 'pointer');
+            //$('body').css('cursor', 'pointer');
+          //}
+          d3.select('#cursor').attr('display', 'none'); // hide the cursor
+          d3.select('#search_ring').attr('stroke', search_color).attr('r',r).attr('display', 'block');
+        }
+
+        // Displaying searching too slow message if threshold is crossed
+        if (new Date() - begin > search_too_slow) {
+          d3.select('#search_too_slow').attr('display', 'block');
+        }
       }
 
     // Calculations done in SHOW_TARGETS phase
@@ -602,20 +625,22 @@ function gameSetup(data) {
 
       // Display the cursor if flag is on 
       if (cursor_show) {
-        if (showPointer == 1) { 
-          //show mouse as pointer (for recording example trials)
-          $('html').css('cursor', 'pointer');
-          $('body').css('cursor', 'pointer');
-        }
+        // UNCOMMENT HERE IF YOU WANT TO SHOW POINTER TO MAKE AN ILLUSTRATIVE VIDEO
+        //if (showPointer == 1) { 
+          ////show mouse as pointer (for recording example trials)
+          //$('html').css('cursor', 'pointer');
+          //$('body').css('cursor', 'pointer');
+        //}
         d3.select('#cursor').attr('display', 'block'); // show cursor
         d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
         d3.select('#search_ring').attr('r',r);
       } else {
-        if (showPointer == 1) { 
-          // show mouse as pointer (for recording example trials)
-          $('html').css('cursor', 'pointer');
-          $('body').css('cursor', 'pointer');
-        }
+        // UNCOMMENT HERE IF YOU WANT TO SHOW POINTER TO MAKE AN ILLUSTRATIVE VIDEO
+        //if (showPointer == 1) { 
+          //// show mouse as pointer (for recording example trials)
+          //$('html').css('cursor', 'pointer');
+          //$('body').css('cursor', 'pointer');
+        //}
         d3.select('#cursor').attr('display', 'none'); // hide the cursor
         d3.select('#search_ring').attr('stroke', search_color).attr('r',r).attr('display', 'block'); // show the search ring
       }
@@ -758,8 +783,8 @@ function gameSetup(data) {
     begin = new Date();
 
     // Target becomes visible
-    target_x = start_x + target_dist * Math.cos(target_angle[trial] * Math.PI/180);
-    target_y = start_y - target_dist * Math.sin(target_angle[trial] * Math.PI/180);
+    target_x = start_x + target_dist * Math.cos((target_angle[trial] + angleadd)  * Math.PI/180);
+    target_y = start_y - target_dist * Math.sin((target_angle[trial] + angleadd)  * Math.PI/180);
     tgt_rad = Math.round(target_dist * target_size[trial]/80.0);
     d3.select('#target').attr('display', 'block').attr('cx', target_x).attr('cy', target_y).attr('r', tgt_rad);
     target_invisible = false;
@@ -777,7 +802,8 @@ function gameSetup(data) {
     // Start of timer for movement time
     begin = new Date();
 
-    mousetm = [0];
+    mousetm = new Array(200).fill(-1);
+    mousetm[0] = [0];
 
     // Start circle disappears
     d3.select('#start').attr('display', 'none');
@@ -822,8 +848,8 @@ function gameSetup(data) {
 
     // Display Cursor Endpoint Feedback
     if (clamped_fb[trial]) { // Clamped feedback
-      cursor_x = start_x + target_dist * Math.cos((target_angle[trial] + rotation[trial]) * Math.PI/180);
-      cursor_y = start_y - target_dist * Math.sin((target_angle[trial] + rotation[trial]) * Math.PI/180);
+      cursor_x = start_x + target_dist * Math.cos((target_angle[trial] + angleadd  + rotation[trial]) * Math.PI/180);
+      cursor_y = start_y - target_dist * Math.sin((target_angle[trial] + angleadd  + rotation[trial]) * Math.PI/180);
       d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
       trial_type = "clamped_fb";
     } else if (endpt_fb[trial] || online_fb[trial]) { // Visible feedback (may be rotated depending on rotation)
@@ -855,15 +881,26 @@ function gameSetup(data) {
     var current_date = (parseInt(d.getMonth()) + 1).toString() + "/" + d.getDate() + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + "." + d.getSeconds() + "." + d.getMilliseconds();
     clearTimeout(itiTimeoutTimer);
 
+    // pull the position and time values that should be saved (i.e., the non-negative, possible values that were sampled this trial)
+    loopiter = 1;
+    toSave_x = mousepos_x[0];
+    toSave_y = mousepos_y[0];
+    toSave_tm = mousetm[0];
+    while (loopiter < positer) {
+      toSave_x.push(mousepos_x[loopiter]);
+      toSave_y.push(mousepos_y[loopiter]);
+      toSave_tm.push(mousetm[loopiter]);
+      loopiter = loopiter + 1;
+    }
+
     cursor_show = false;
     // Uploading reach data for this reach onto the database
     //SubjTrials.group_type is defined in startGame
-    subjTrials.experimentID = experiment_ID;
     subjTrials.id = subject.id.concat(counter.toString());
     subjTrials.name = subject.id;
     subjTrials.currentDate = current_date;
     subjTrials.trialNum = trial + 1;
-    subjTrials.target_angle = target_angle[trial];
+    subjTrials.target_angle = target_angle[trial] + angleadd ;
     subjTrials.trial_type = trial_type;
     subjTrials.rotation = rotation[trial];
     subjTrials.hand_fb_angle = hand_fb_angle;
@@ -871,13 +908,17 @@ function gameSetup(data) {
     subjTrials.mt = mt;
     subjTrials.search_time = search_time;
     subjTrials.reach_feedback = reach_feedback;
+    subjTrials.posx = toSave_x;
+    subjTrials.posy = toSave_y;
+    subjTrials.postm = toSave_tm;
     recordTrialSubj(trialcollection, subjTrials);
 
-    // record mouse trajectory TO DO!
-
-    // reset starting mouse position
-    mousepos_x = [start_x];
-    mousepos_y = [start_y];
+    // reset starting mouse position and iterator
+    mousepos_x = new Array(200).fill(-1);
+    mousepos_y = new Array(200).fill(-1);
+    mousepos_x[0] = [start_x];
+    mousepos_y[0] = [start_y];
+    positer = 1;
 
     // Updating subject data to display most recent reach on database
     subject.currTrial = trial + 1;

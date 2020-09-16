@@ -78,3 +78,5 @@ test-onpoint-firebase-adminsdk-2eveo-cc6ba9156c.json
 
 # firebase pull data python function
 db_csv_testFetch.py
+python_scripts/testForPandas.py
+python_scripts/testingagain.py
