@@ -86,7 +86,8 @@ var subject = {
   ethnicity: null,
   race: null,
   clampQ: null,
-  comments: null
+  comments: null,
+  restarted: false
 }
 
 // Function used to check if all questions were filled in info form, if so, starts the experiment 
@@ -155,6 +156,27 @@ function saveFeedback() {
   // }
   createSubject(subjectcollection, subject);
   show('final-page', 'container-not-an-ad');
+}
+
+// not clear to me that this matters. Trying to solve number of trials not getting reset
+function refreshIndexJs() {
+  subject = {
+      id: null, 
+      age: null,
+      sex: null,
+      handedness: null,
+      mousetype: null,
+      returner: null,
+      currTrial: 0,
+      tgt_file: null,
+      ethnicity: null,
+      race: null,
+      clampQ: null,
+      comments: null,
+      restarted: true
+  }
+
+  //console.log(subject);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

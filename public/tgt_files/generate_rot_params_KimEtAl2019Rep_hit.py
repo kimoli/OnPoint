@@ -33,8 +33,8 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
     # Ensure non demo cycles add up
     if (movementCycle != sum(cycleDistribution)):
         raise Exception('Number of non demo cycles do not add up. Should have ' + str(movementCycle) + ' cycles, but has ' + str(sum(cycleDistribution)) + '.')
-    if (len(cycleDistribution) != 4):
-        raise Exception('Incorrect amount of entries in cycle distribution, should have 4 but has ' + str(len(cycleDistribution)) + '.')
+    if (len(cycleDistribution) != 5):
+        raise Exception('Incorrect amount of entries in cycle distribution, should have 5 but has ' + str(len(cycleDistribution)) + '.')
     jsonData = {}
     targetAngles = generateTargetAngles(numTargets)
     numTrials = numTargets * movementCycle # block size
@@ -55,11 +55,12 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
     targetSize = {}
     
     # Breakpoints between phases
-    base_no_fb = cycleDistribution[0] * numTargets
-    base_fb = base_no_fb + (cycleDistribution[1] * numTargets)
-    demo = base_fb + numDemoTrials
-    rotate = demo + (cycleDistribution[2] * numTargets) # number of trials in the rotation phase
-    aftereffect_no_fb = rotate + (cycleDistribution[3] * numTargets)
+    base_fb1 = cycleDistribution[0] * numTargets
+    base_no_fb = base_fb1 + (cycleDistribution[1] * numTargets)
+    base_fb2 = base_no_fb + (cycleDistribution[2] * numTargets)
+    demo = base_fb2 + numDemoTrials
+    rotate = demo + (cycleDistribution[3] * numTargets) # number of trials in the rotation phase
+    aftereffect_no_fb = rotate + (cycleDistribution[4] * numTargets)
     if (totalNumTrials != aftereffect_no_fb):
         raise Exception('Number of reaches do not add up. Should have ' + str(totalNumTrials) + ' targets, but only has ' + str(aftereffect_no_fb) + '.')
 
@@ -71,13 +72,19 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         aimingLandmarks[i] = 0
         tgtDistance[i] = targetDistance
         targetSize[i] = 9 # 3.5 causes straddle (on my screen) with a 1.75 degree error, 9 causes hit
-        if i < base_no_fb : # baseline acclimation phase without online cursor feedback, will have cycleDistribution[0] of these trials for every target
+        if i < base_fb1 :# baseline phase with online feedback, will have cycleDistribution[0] of these trials for every target
+            onlineFB[i] = 1
+            endpointFB[i] = 1
+            rotation[i] = float(0)
+            clampedFB[i] = float(0)
+            targetJump[i] = float(0)
+        elif i < base_no_fb : # baseline acclimation phase without online cursor feedback, will have cycleDistribution[1] of these trials for every target
             onlineFB[i] = 0
             endpointFB[i] = 0
             rotation[i] = float(0)
             clampedFB[i] = float(0)
             targetJump[i] = float(0)
-        elif i < base_fb : # baseline phase with online feedback, will have cycleDistribution[1] of these trials for every target
+        elif i < base_fb2 : # baseline phase with online feedback, will have cycleDistribution[2] of these trials for every target
             onlineFB[i] = 1
             endpointFB[i] = 1
             rotation[i] = float(0)
@@ -91,7 +98,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
             rotation[i] = float(rotationAngle)
             clampedFB[i] = float(1)
             targetJump[i] = float(0)
-        elif i < rotate : # training trials, will have cucleDistribution[2] of these for every target location
+        elif i < rotate : # training trials, will have cycleDistribution[3] of these for every target location
             # for this experiment, keep feedback constant throughout the block
             onlineFB[i] = 1
             endpointFB[i] = 1    
@@ -116,7 +123,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
                 clampedFB[i] = float(1)
                 targetJump[i] = float(0)
                 
-        else: # no-feedback test trials, will have cycleDistribution[3] of these for every target location
+        else: # no-feedback test trials, will have cycleDistribution[4] of these for every target location
             onlineFB[i] = 0
             endpointFB[i] = 0
             rotation[i] = float(0)
@@ -132,9 +139,9 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         betweenBlocks[str(i)] = 0.0
 
     # Set up all demo targets
-    for i in range(base_fb, demo):
+    for i in range(base_fb2, demo):
         anglesDict[i] = float(demoTargetAngle)
-    for i in range(base_fb - 1, demo - 1):
+    for i in range(base_fb2 - 1, demo - 1):
         betweenBlocks[str(i)] = 6
     
     # Should automatically be updated by now
@@ -144,15 +151,16 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
     # 4 = attention check press 'a'
     # 5 = attention check press 'e'
     # 6 = demo instructions
+    betweenBlocks[str(base_fb1-1)] = 3
     betweenBlocks[str(base_no_fb - 1)] = 1
     betweenBlocks[str(demo - 1)] = 2
     betweenBlocks[str(rotate - 1)] = 3
     # Attention check blocks // 5 = press 'a', 4 == press 'e', randomly pick spots before 50 trials, double check with index.js for consistency.
     if (totalNumTrials > 39):
-        betweenBlocks[str(6)] = 4
-        betweenBlocks[str(14)] = 5
-        betweenBlocks[str(24)] = 4
-        betweenBlocks[str(39)] = 5
+        betweenBlocks[str(16)] = 4
+        betweenBlocks[str(26)] = 5
+        betweenBlocks[str(46)] = 4
+        betweenBlocks[str(80)] = 5
 
 
     jsonData["trialnum"] = trialNums
@@ -172,11 +180,11 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         print ("value: ", jsonData[key])
         print ("")
 
-    with open('KimEtAl2019Rep_hitCW.json', 'w') as outfile:
+    with open('KimEtAl2019Rep_hitCW_20200917.json', 'w') as outfile:
         json.dump(jsonData, outfile)
 
 
-nonDemoCycles = [2, 2, 10, 0]
+nonDemoCycles = [1, 2, 1, 10, 0]
 generateJSON(8, 14, nonDemoCycles, -1.75, 80, 1, 270)
 """
 The above call 'generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270)' will generate a target file with:

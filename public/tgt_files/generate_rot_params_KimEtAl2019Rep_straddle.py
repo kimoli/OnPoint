@@ -71,7 +71,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         trialNums[i] = i + 1
         aimingLandmarks[i] = 0
         tgtDistance[i] = targetDistance
-        targetSize[i] = 9 # 3.5 causes straddle (on my screen) with a 1.75 degree error, 9 causes hit
+        targetSize[i] = 3.5 # 3.5 causes straddle (on my screen) with a 1.75 degree error, 9 causes hit
         if i < base_fb1 :# baseline phase with online feedback, will have cycleDistribution[0] of these trials for every target
             onlineFB[i] = 1
             endpointFB[i] = 1
@@ -151,10 +151,11 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
     # 4 = attention check press 'a'
     # 5 = attention check press 'e'
     # 6 = demo instructions
+    betweenBlocks[str(base_fb1-1)] = 3
     betweenBlocks[str(base_no_fb - 1)] = 1
     betweenBlocks[str(demo - 1)] = 2
     betweenBlocks[str(rotate - 1)] = 3
-    # Attention check blocks // 5 = press 'a', 4 == press 'e', randomly pick spots, double check with index.js for consistency.
+    # Attention check blocks // 5 = press 'a', 4 == press 'e', randomly pick spots before 50 trials, double check with index.js for consistency.
     if (totalNumTrials > 39):
         betweenBlocks[str(16)] = 4
         betweenBlocks[str(26)] = 5
@@ -179,7 +180,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         print ("value: ", jsonData[key])
         print ("")
 
-    with open('KimEtAl2019Rep_straddle.json', 'w') as outfile:
+    with open('KimEtAl2019Rep_straddle_20200917.json', 'w') as outfile:
         json.dump(jsonData, outfile)
 
 

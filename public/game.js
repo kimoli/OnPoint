@@ -33,7 +33,6 @@ var subjTrials = {
 // Variables used throughout the experiment
 var fileName;
 var svgContainer;
-var experiment_ID;
 var subject_ID;
 var target_dist;
 var trial_type;
@@ -88,6 +87,7 @@ var SHOW_TARGETS;
 var MOVING;
 var FEEDBACK;
 var BETWEEN_BLOCKS;
+var END_GAME;
 var game_phase = BETWEEN_BLOCKS;
 var reach_feedback;
 var bb_counter;
@@ -112,22 +112,10 @@ var toSave_tm;
 var angleadd;
 var tempiter;
 var grp;
+var gameTimer;
+var gameRefreshed = false;
+var prevTrials = 0;
 
-// Object to save reach data per reach, usage has become slightly obsolete but is still used as an intermediate object to store data before uploading to database
-var reachData = {
-  experiment_ID: '',
-  subject_ID: '', 
-  current_date: '', 
-  trial: '', 
-  target_angle: '', 
-  trial_type: '', 
-  rotation: '', 
-  hand_fb_angle: '', 
-  rt: '', 
-  mt: '', 
-  search_time: '', 
-  reach_feedback: '',
-}
 
 // specify at the top here whether mouse pointer will be shown or not
 //var showPointer = 0;
@@ -138,21 +126,21 @@ function startGame() {
   // Implement following commented code for uniform random selection of target files
    d = Math.floor(Math.random() * 4);
    if (d == 0) {
-     fileName = "tgt_files/KimEtAl2019Rep_hit.json";
+     fileName = "tgt_files/KimEtAl2019Rep_hit_20200917.json";
      grp = 'h_CCW';
    } else if (d == 1) {
-     fileName = "tgt_files/KimEtAl2019Rep_straddle.json"; 
+     fileName = "tgt_files/KimEtAl2019Rep_straddle_20200917.json"; 
      grp = 's_CCW';
    } else if (d == 2) {
-     fileName = "tgt_files/KimEtAl2019Rep_hitCW.json";
+     fileName = "tgt_files/KimEtAl2019Rep_hitCW_20200917.json";
      grp = 'h_CW'; 
    } else {
-     fileName = "tgt_files/KimEtAl2019Rep_straddleCW.json";
+     fileName = "tgt_files/KimEtAl2019Rep_straddleCW_20200917.json";
      grp = 's_CW';
    }
 
   // Implement following commented code to select a single target file
-  //fileName = "tgt_files/KimEtAl2019Rep_hit.json"
+  //fileName = "tgt_files/KimEtAl2019Rep_hitCW.json"
 
   subject.tgt_file = fileName;
   subjTrials.group_type = grp; // **TODO** update group_type to manage the groups
@@ -166,6 +154,8 @@ function startGame() {
 // Function that sets up the game 
 // All game functions are defined within this main function, treat as "main"
 function gameSetup(data) {
+  //console.log(subject);
+
   /*********************
   * Browser Settings  *
   *********************/
@@ -207,7 +197,6 @@ function gameSetup(data) {
   $(document).on("keydown", advance_block);
 
   // Experiment parameters, subject_ID is no obsolete
-  experiment_ID = "multiclamp"; // **TODO** Update experiment_ID to label your experiments
   subject_ID = Math.floor(Math.random() * 10000000000);
 
   /***************************
@@ -279,7 +268,7 @@ function gameSetup(data) {
   curTime = NaN;
 
   instrucTimeLimit = 60000; // 1 min
-  ititimelimit = 120000; // 2 mins
+  ititimelimit = 90000; // 1.5 mins
   //instrucTimeLimit = 30000; // 30 s for testing
   //ititimelimit = 30000; // 30 s for testing
 
@@ -325,7 +314,7 @@ function gameSetup(data) {
           "Pressing any other key will result in a premature game termination and an incomplete HIT!"],
           ["The green dot will no longer be under your control while you move towards the target.", // bb_mess == 6
           "IGNORE the green dot as best as you can and continue aiming DIRECTLY towards the target.",
-          "This will be a practice trial",
+          "This will be a practice trial.",
           "Press SPACE BAR when you are ready to proceed."]];
 
   // Setting size of the displayed letters and sentences
@@ -387,12 +376,12 @@ function gameSetup(data) {
         .attr('text-anchor', 'middle')
         .attr('x', screen_width/2)
         .attr('y', screen_height/2)
-        .attr('fill', 'red')
+        .attr('fill', 'orange')
         .attr('font-family', 'Verdana')
         .attr('font-size', message_size)
         .attr('id', 'too_slow_message')
         .attr('display', 'none')
-        .text('Move Faster'); 
+        .text('Too Slow'); 
 
   // Parameters and display for when users take too long to locate the center
   search_too_slow = 10000; // in milliseconds
@@ -474,6 +463,7 @@ function gameSetup(data) {
   MOVING = 3; // The reaching motion 
   FEEDBACK = 4; // Displaying the feedback after reach
   BETWEEN_BLOCKS = 5; // Displaying break messages if necessary
+  END_GAME = 1000; // I think this just needs to be defined
   game_phase = BETWEEN_BLOCKS;
 
   // Initializing between block parameters
@@ -486,7 +476,7 @@ function gameSetup(data) {
   cursor_show = false;
 
   //setTimeout(gameTimedOut, 30000); // 30s timeout for testing
-  setTimeout(gameTimedOut, 3600000); // one hour timeout
+  gameTimer = setTimeout(gameTimedOut, 3600000); // one hour timeout
 
   // have the targets centered about random locations
   angleadd = Math.floor(Math.random()*360)+1;
@@ -614,6 +604,11 @@ function gameSetup(data) {
 
     // Flag cursor to display if within certain distance to center
     } else if (game_phase == SEARCHING) {
+
+      // make sure the mouse pointer is off (if person leaves window the cursor can come back on)
+      $('html').css('cursor', 'none');
+      $('body').css('cursor', 'none');
+
       if (r <= target_dist/8) {
         cursor_show = true;
       //} else if (new Date() - begin > search_too_slow){
@@ -816,9 +811,9 @@ function gameSetup(data) {
     game_phase = FEEDBACK;
 
     // debugging output
-    console.log(mousepos_x)
-    console.log(mousepos_y)
-    console.log(mousetm)
+    //console.log(mousepos_x)
+    //console.log(mousepos_y)
+    //console.log(mousetm)
 
     // Record movement time as time spent reaching before intersecting target circle
     // Can choose to add audio in later if necessary
@@ -828,8 +823,8 @@ function gameSetup(data) {
     if (mt > too_slow_time) {
       // d3.select('#target').attr('fill', 'red');
       if_slow = true;
-      d3.select('#target').attr('display', 'none');
       d3.select('#cursor').attr('display', 'none');
+      d3.select('#target').attr('display', 'none');
       d3.select('#too_slow_message').attr('display', 'block');
       reach_feedback = "too_slow";
     } else {
@@ -864,19 +859,36 @@ function gameSetup(data) {
 
     // Start next trial after feedback time has elapsed
     if (if_slow) {
-      if_slow = false;
-      d3.select('#too_slow_message').attr('display', 'none');
-      fb_timer = setTimeout(next_trial, feedback_time_slow)
+      if_slow = false; // reset variable for next time
+      fb_timer = setTimeout(targetAndCursorOff, feedback_time);
+      fb_timer = setTimeout(next_trial, feedback_time_slow);      
     } else {
-      d3.select('#too_slow_message').attr('display', 'none');
       fb_timer = setTimeout(next_trial, feedback_time);
     }
+  }
+
+  function targetAndCursorOff() {
+    // Ensure target, cursor invisible
+    d3.select('#target').attr('display', 'none');
+    d3.select('#cursor').attr('display', 'none');
+    target_invisible = true; // for clicking, currently not employed
+    cursor_show = false;
   }
   
 
   // Function used to initiate the next trial after uploading reach data and subject data onto the database
   // Cleans up all the variables and displays to set up for the next reach
   function next_trial() {
+
+    // Ensure target, cursor invisible
+    d3.select('#target').attr('display', 'none');
+    d3.select('#cursor').attr('display', 'none');
+    target_invisible = true; // for clicking, currently not employed
+    cursor_show = false;
+
+    // make sure too slow message is off
+    d3.select('#too_slow_message').attr('display', 'none');
+
     var d = new Date();
     var current_date = (parseInt(d.getMonth()) + 1).toString() + "/" + d.getDate() + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + "." + d.getSeconds() + "." + d.getMilliseconds();
     clearTimeout(itiTimeoutTimer);
@@ -893,7 +905,6 @@ function gameSetup(data) {
       loopiter = loopiter + 1;
     }
 
-    cursor_show = false;
     // Uploading reach data for this reach onto the database
     //SubjTrials.group_type is defined in startGame
     subjTrials.id = subject.id.concat(counter.toString());
@@ -937,12 +948,6 @@ function gameSetup(data) {
     trial += 1;
     counter += 1;
     d3.select('#trialcount').text('Reach Number: ' + counter + ' / ' + totalTrials);
-
-  
-    // Ensure target, cursor invisible
-    d3.select('#target').attr('display', 'none');
-    d3.select('#cursor').attr('display', 'none');
-    target_invisible = true; // for clicking, currently not employed
       
     // Checks whether the experiment is complete, if not continues to next trial
     if (trial == num_trials) {
@@ -968,6 +973,7 @@ function gameSetup(data) {
     } else {
       // Start a timer for kicking the subject if they take too long to complete a trial
       itiTimeoutTimer = setTimeout(itiTimedOut, ititimelimit); // kick subject if they take too long to finish this trial
+      console.log("started ITI timer")
 
       // Start next trial
       search_phase();
@@ -1067,6 +1073,9 @@ function gameTimedOut() {
   d3.select('#countdown').attr('display', 'none');
   d3.select('#trialcount').attr('display', 'none');
 
+  refreshGameJs();
+  refreshIndexJs();
+
   show('container-timeout', 'container-exp');
 }
 
@@ -1093,6 +1102,9 @@ function itiTimedOut() {
   // d3.select('#encouragement').attr('display', 'none');
   d3.select('#countdown').attr('display', 'none');
   d3.select('#trialcount').attr('display', 'none');
+
+  refreshGameJs();
+  refreshIndexJs();
 
   show('container-ititimeout', 'container-exp');
 }
@@ -1121,7 +1133,117 @@ function instrucTimedOut() {
   d3.select('#countdown').attr('display', 'none');
   d3.select('#trialcount').attr('display', 'none');
 
+  refreshGameJs();
+  refreshIndexJs();
+
   show('container-instructimeout', 'container-exp');
+}
+
+// it's not clear to me if this matters, trying to solve numtrials not getting reset problem
+function refreshGameJs() {
+  clearTimeout(itiTimeoutTimer);
+  clearTimeout(gameTimer);
+  clearTimeout(instrucTimeoutTimer);
+
+  subjTrials = {
+    id: null,
+    name: null,
+    trialNum: null,
+    currentDate: null,
+    target_angle: null,
+    trial_type: null,
+    rotation: null,
+    hand_fb_angle: null,
+    rt: null,
+    mt: null,
+    search_time: null,
+    reach_feedback: null,
+    group_type: null,
+    posx: null,
+    posy: null,
+    postm: null
+  }
+
+  fileName = null;
+  svgContainer = null;
+  subject_ID = null;
+  target_dist = null;
+  trial_type = null;
+  start_x = null;
+  start_y = null;
+  start_radius = null;
+  start_color = null;
+  target_x = null;
+  target_y = null;
+  target_radius = null;
+  target_color = null;
+  hand_x = null;
+  hand_y = null;
+  hand_fb_x = null;
+  hand_fb_y = null;
+  r = null;
+  cursor_x = null;
+  cursor_y = null;
+  cursor_radius = null;
+  cursor_color = null;
+  search_color = null;
+  messages = null;
+  line_size = null;
+  message_size = null;
+  counter = null;
+  target_file_data = null;
+  rotation = null;
+  target_angle = null;
+  online_fb = null;
+  endpt_fb = null;
+  clamped_fb = null;
+  between_blocks = null;
+  trial = null;
+  num_trials = null;
+  search_tolerance = null;
+  hand_angle = null;
+  hand_fb_angle = null;
+  rt = null;
+  mt = null;
+  search_time = null;
+  feedback_time = null;
+  feedback_time_slow = null;
+  if_slow = null;
+  hold_time = null;
+  hold_timer = null;
+  fb_timer = null;
+  begin = null;
+  timing = null;
+  SEARCHING = null;
+  HOLDING = null;
+  SHOW_TARGETS = null;
+  MOVING = null;
+  FEEDBACK = null;
+  BETWEEN_BLOCKS = null;
+  game_phase = BETWEEN_BLOCKS;
+  reach_feedback = null;
+  bb_counter = null;
+  target_invisible = null;
+  mousepos_x = null;
+  mousepos_y = null;
+  mousetm = null;
+  elapsedTime = null;
+  curTime = null;
+  showCursor = null;
+  searchRad = null;
+  itiTimeoutTimer = null;
+  instrucTimeoutTimer = null;
+  instrucTimeLimit = null;
+  ititimelimit = null;
+  positer = null;
+  loopiter = null;
+  toSave_x = null;
+  toSave_y = null;
+  toSave_tm = null;
+  angleadd = null;
+  tempiter = null;
+  grp = null;
+  gameTimer = null;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
