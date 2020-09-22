@@ -86,8 +86,8 @@ var subject = {
   ethnicity: null,
   race: null,
   clampQ: null,
-  comments: null,
-  restarted: false
+  pointerQ: null,
+  comments: null
 }
 
 // Function used to check if all questions were filled in info form, if so, starts the experiment 
@@ -148,7 +148,8 @@ function createSubject(collection, subject) {
 function saveFeedback() {
   var values = $("#feedbackForm").serializeArray();
   subject.clampQ = values[0].value;
-  subject.comments = values[1].value;
+  subject.pointerQ = values[1].value;
+  subject.comments = values[2].value;
   // Currently not employing the clampQ question, but can be used
   // if(!subject.clampQ) {
   //   alert("Please answer the first question! You can leave the second question blank.")
@@ -172,8 +173,8 @@ function refreshIndexJs() {
       ethnicity: null,
       race: null,
       clampQ: null,
-      comments: null,
-      restarted: true
+      pointerQ: null,
+      comments: null
   }
 
   //console.log(subject);

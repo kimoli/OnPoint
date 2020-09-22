@@ -126,16 +126,16 @@ function startGame() {
   // Implement following commented code for uniform random selection of target files
    d = Math.floor(Math.random() * 4);
    if (d == 0) {
-     fileName = "tgt_files/KimEtAl2019Rep_hit_20200917.json";
+     fileName = "tgt_files/KimEtAl2019Rep_hit_20200917_2.json";
      grp = 'h_CCW';
    } else if (d == 1) {
-     fileName = "tgt_files/KimEtAl2019Rep_straddle_20200917.json"; 
+     fileName = "tgt_files/KimEtAl2019Rep_straddle_20200917_2.json"; 
      grp = 's_CCW';
    } else if (d == 2) {
-     fileName = "tgt_files/KimEtAl2019Rep_hitCW_20200917.json";
+     fileName = "tgt_files/KimEtAl2019Rep_hitCW_20200917_2.json";
      grp = 'h_CW'; 
    } else {
-     fileName = "tgt_files/KimEtAl2019Rep_straddleCW_20200917.json";
+     fileName = "tgt_files/KimEtAl2019Rep_straddleCW_20200917_2.json";
      grp = 's_CW';
    }
 
@@ -171,8 +171,8 @@ function gameSetup(data) {
   // UNCOMMENT HERE IF YOU WANT TO SHOW POINTER TO MAKE AN ILLUSTRATIVE VIDEO
   //if (showPointer == 0) {
     // Hide the mouse from view 
-    $('html').css('cursor', 'none');
-    $('body').css('cursor', 'none');
+    $('html').css('cursor', 'url(images/transparentcursor.png), auto');
+    $('body').css('cursor', 'url(images/transparentcursor.png), auto;');
   //} else {
     // show mouse as pointer (for recording example trials)
   //  $('html').css('cursor', 'pointer');
@@ -476,7 +476,7 @@ function gameSetup(data) {
   cursor_show = false;
 
   //setTimeout(gameTimedOut, 30000); // 30s timeout for testing
-  gameTimer = setTimeout(gameTimedOut, 3600000); // one hour timeout
+  //gameTimer = setTimeout(gameTimedOut, 3600000); // one hour timeout
 
   // have the targets centered about random locations
   angleadd = Math.floor(Math.random()*360)+1;
@@ -515,23 +515,27 @@ function gameSetup(data) {
         Jump target to clamp if target_jump[trial] == 1
         Jump target away from clamp by target_jump[trial] if value is neither 0 || 1
       */
-      if (target_jump[trial] == 1) {
-        target_x = start_x + target_dist * Math.cos((target_angle[trial] + angleadd + rotation[trial]) * Math.PI/180);
-        target_y = start_y - target_dist * Math.sin((target_angle[trial] + angleadd  + rotation[trial]) * Math.PI/180);
-        d3.select('#target').attr('cx', target_x).attr('cy', target_y).attr('display', 'block');
-      } else if (target_jump[trial] != 0) {
-        target_x = start_x + target_dist * Math.cos((target_angle[trial] + angleadd  + target_jump[trial]) * Math.PI/180);
-        target_y = start_y - target_dist * Math.sin((target_angle[trial] + angleadd  + target_jump[trial]) * Math.PI/180);
-        d3.select('#target').attr('cx', target_x).attr('cy', target_y).attr('display', 'block');
-      }
+      // commenting this condition out since I know I don't need it right now, and I want to accellerate sampling interval
+      //if (target_jump[trial] == 1) {
+      //  target_x = start_x + target_dist * Math.cos((target_angle[trial] + angleadd + rotation[trial]) * Math.PI/180);
+      //  target_y = start_y - target_dist * Math.sin((target_angle[trial] + angleadd  + rotation[trial]) * Math.PI/180);
+      //  d3.select('#target').attr('cx', target_x).attr('cy', target_y).attr('display', 'block');
+      //} else if (target_jump[trial] != 0) {
+      //  target_x = start_x + target_dist * Math.cos((target_angle[trial] + angleadd  + target_jump[trial]) * Math.PI/180);
+      //  target_y = start_y - target_dist * Math.sin((target_angle[trial] + angleadd  + target_jump[trial]) * Math.PI/180);
+      //  d3.select('#target').attr('cx', target_x).attr('cy', target_y).attr('display', 'block');
+      //}
 
       // Updating cursor locations depending on clamp, fb, no_fb
       if (clamped_fb[trial]) { // Clamped feedback
         cursor_x = start_x + r * Math.cos((target_angle[trial] + angleadd  + rotation[trial]) * Math.PI/180);
         cursor_y = start_y - r * Math.sin((target_angle[trial] + angleadd  + rotation[trial]) * Math.PI/180);
-      } else if (online_fb[trial]) { // Rotated feedback (vmr)
-        cursor_x = start_x + r * Math.cos((hand_angle + rotation[trial]) * Math.PI/180);
-        cursor_y = start_y - r * Math.sin((hand_angle + rotation[trial]) * Math.PI/180);
+
+      // commenting this out since I know I don't need it right now, and I want to accellerate sampling interval
+      //} else if (online_fb[trial]) { // Rotated feedback (vmr)
+      //  cursor_x = start_x + r * Math.cos((hand_angle + rotation[trial]) * Math.PI/180);
+      //  cursor_y = start_y - r * Math.sin((hand_angle + rotation[trial]) * Math.PI/180);
+
       } else { // Veridical feedback
         cursor_x = hand_x;
         cursor_y = hand_y;
@@ -539,10 +543,9 @@ function gameSetup(data) {
 
       // Record cursor location whenever movement is detected, but only take up to 200 samples
       if (positer<=199) {
-        elapsedTime = curTime.getTime() - begin.getTime();  // begin is a timestamp that gets reset once the cursor starts moving
         mousepos_x[positer]= hand_x;
         mousepos_y[positer]=hand_y;
-        mousetm[positer]=elapsedTime;
+        mousetm[positer]=curTime.getTime(); // reduce computations, calc elapsed time later
         positer = positer + 1;
       }
 
@@ -551,8 +554,19 @@ function gameSetup(data) {
       cursor_y = hand_y;
     }
 
+    
+    // Displaying the cursor during MOVING if targetfile indicates so for the reach
+    //    put this before the other conditions so the code doesn't get stuck checking them and can accelerate sampling
+    if (game_phase==MOVING) {
+      // d3.select('#search_ring').attr('display', 'none');
+      if (online_fb[trial] || clamped_fb[trial]) {
+        d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
+      } else {
+        d3.select('#cursor').attr('display', 'none'); // hide the cursor
+      }
+
     // Calculations done in the HOLDING phase
-    if (game_phase == HOLDING) {
+    } else if (game_phase == HOLDING) {
       if (r <= start_radius) { // Fill the center if within start radius
         d3.select('#cursor').attr('display', 'none'); 
         d3.select('#start').attr('fill', start_color);
@@ -606,8 +620,8 @@ function gameSetup(data) {
     } else if (game_phase == SEARCHING) {
 
       // make sure the mouse pointer is off (if person leaves window the cursor can come back on)
-      $('html').css('cursor', 'none');
-      $('body').css('cursor', 'none');
+      $('html').css('cursor', 'url(images/transparentcursor.png), auto;');
+      $('body').css('cursor', 'url(images/transparentcursor.png), auto;');
 
       if (r <= target_dist/8) {
         cursor_show = true;
@@ -649,21 +663,14 @@ function gameSetup(data) {
       if (new Date() - begin > search_too_slow) {
         d3.select('#search_too_slow').attr('display', 'block');
       }
-
-    // Displaying the cursor during MOVING if targetfile indicates so for the reach
-    } else if (game_phase == MOVING) {
-      // d3.select('#search_ring').attr('display', 'none');
-      if (online_fb[trial] || clamped_fb[trial]) {
-        d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
-      } else {
-        d3.select('#cursor').attr('display', 'none'); // hide the cursor
-      }
     }
 
     // Trigger Game Phase Changes that are Dependent on Cursor Movement
 
     // Move from search to hold phase if they move within search tolerance of the start circle 
-    if (game_phase == SEARCHING && r <= search_tolerance && cursor_show) {
+    if (game_phase == MOVING && r < target_dist) {
+      // do nothing, just trying to skip subsequent comparisons if can
+    } else if (game_phase == SEARCHING && r <= search_tolerance && cursor_show) {
       d3.select('#search_too_slow').attr('display', 'none');
       // d3.select('#encouragement').attr('display', 'none');
       hold_phase();
@@ -725,6 +732,7 @@ function gameSetup(data) {
       itiTimeoutTimer = setTimeout(itiTimedOut, ititimelimit); // kick subject if they take too long to finish this trial
       search_phase();
     } else {
+      clearTimeout(instrucTimeoutTimer);
       console.log("premature end");
       console.log(bb_mess);
       badGame(); // Premature exit game if failed attention check
@@ -857,6 +865,9 @@ function gameSetup(data) {
       trial_type = "no_fb";
     }
 
+    // clear ITI timeout
+    clearTimeout(itiTimeoutTimer);
+
     // Start next trial after feedback time has elapsed
     if (if_slow) {
       if_slow = false; // reset variable for next time
@@ -891,7 +902,6 @@ function gameSetup(data) {
 
     var d = new Date();
     var current_date = (parseInt(d.getMonth()) + 1).toString() + "/" + d.getDate() + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + "." + d.getSeconds() + "." + d.getMilliseconds();
-    clearTimeout(itiTimeoutTimer);
 
     // pull the position and time values that should be saved (i.e., the non-negative, possible values that were sampled this trial)
     loopiter = 1;
@@ -901,9 +911,10 @@ function gameSetup(data) {
     while (loopiter < positer) {
       toSave_x.push(mousepos_x[loopiter]);
       toSave_y.push(mousepos_y[loopiter]);
-      toSave_tm.push(mousetm[loopiter]);
+      toSave_tm.push(mousetm[loopiter] - begin.getTime());
       loopiter = loopiter + 1;
     }
+    console.log(toSave_tm);
 
     // Uploading reach data for this reach onto the database
     //SubjTrials.group_type is defined in startGame

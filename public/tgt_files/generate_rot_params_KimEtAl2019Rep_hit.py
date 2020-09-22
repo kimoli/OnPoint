@@ -160,7 +160,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         betweenBlocks[str(16)] = 4
         betweenBlocks[str(26)] = 5
         betweenBlocks[str(46)] = 4
-        betweenBlocks[str(80)] = 5
+        betweenBlocks[str(56)] = 5
 
 
     jsonData["trialnum"] = trialNums
@@ -180,12 +180,12 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         print ("value: ", jsonData[key])
         print ("")
 
-    with open('KimEtAl2019Rep_hitCW_20200917.json', 'w') as outfile:
+    with open('KimEtAl2019Rep_hit_20200917_2.json', 'w') as outfile:
         json.dump(jsonData, outfile)
 
 
 nonDemoCycles = [1, 2, 1, 10, 0]
-generateJSON(8, 14, nonDemoCycles, -1.75, 80, 1, 270)
+generateJSON(8, 14, nonDemoCycles, 1.75, 80, 1, 270)
 """
 The above call 'generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270)' will generate a target file with:
 - 2 targets
