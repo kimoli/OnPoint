@@ -1,8 +1,12 @@
 # OnPoint: A package for online experiments in motor control and motor learning
 
-The goal of the github repository is to help you host your motor learning experiment online. For a detailed step-by-step breakdown, please visit the [OnPoint Manual for Online Experiment Hosting](https://docs.google.com/document/d/1E5XzQU2dJw7m880P7VhmESPpUNQlEdMcf9fweHLtG0o/edit?usp=sharing). The experiment is in essence a website coded in Javascript/HTML/CSS and hosted on the [Firebase server](https://firebase.google.com/). Participants can be recruited using [Amazon Mechanical Turk Requester](https://requester.mturk.com/), [Prolific](https://www.prolific.co/), or any other crowdsourcing platform. 
+This is a modified version of the OnPoint package. The original version of the software can be found [here](https://github.com/alan-s-lee/OnPoint)
 
-[Try out one of our experiments here.](https://multiclamp-c2.web.app/) 
+[OnPoint Manual for Online Experiment Hosting](https://docs.google.com/document/d/1E5XzQU2dJw7m880P7VhmESPpUNQlEdMcf9fweHLtG0o/edit?usp=sharing).
+
+The experiment is in essence a website coded in Javascript/HTML/CSS and hosted on the [Firebase server](https://firebase.google.com/). Participants can be recruited using [Amazon Mechanical Turk Requester](https://requester.mturk.com/), [Prolific](https://www.prolific.co/), or any other crowdsourcing platform. 
+
+[Try out one of the Ivry lab's experiments here.](https://multiclamp-c2.web.app/) 
 [Watch a short presentation describing the package here.](https://www.loom.com/share/230ea6f6e9d841d193341f12aa9dddbd/) 
 
 <img src="public/images/sampleOut.gif" width="720" height="404" />

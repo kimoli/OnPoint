@@ -123,21 +123,29 @@ var prevTrials = 0;
 // Function used to start running the game
 // **TODO** Update the 'fileName' to path to targetfile
 function startGame() {
-  // Implement following commented code for uniform random selection of target files
-   d = Math.floor(Math.random() * 4);
+  d = Math.floor(Math.random() * 2);
    if (d == 0) {
-     fileName = "tgt_files/KimEtAl2019Rep_hit_20200917_2.json";
-     grp = 'h_CCW';
-   } else if (d == 1) {
      fileName = "tgt_files/KimEtAl2019Rep_straddle_20200917_2.json"; 
      grp = 's_CCW';
-   } else if (d == 2) {
-     fileName = "tgt_files/KimEtAl2019Rep_hitCW_20200917_2.json";
-     grp = 'h_CW'; 
    } else {
      fileName = "tgt_files/KimEtAl2019Rep_straddleCW_20200917_2.json";
      grp = 's_CW';
    }
+  // Implement following commented code for uniform random selection of target files
+  // d = Math.floor(Math.random() * 4);
+  // if (d == 0) {
+  //   fileName = "tgt_files/KimEtAl2019Rep_hit_20200917_2.json";
+  //   grp = 'h_CCW';
+  // } else if (d == 1) {
+  //   fileName = "tgt_files/KimEtAl2019Rep_straddle_20200917_2.json"; 
+  //   grp = 's_CCW';
+  // } else if (d == 2) {
+  //   fileName = "tgt_files/KimEtAl2019Rep_hitCW_20200917_2.json";
+  //   grp = 'h_CW'; 
+  // } else {
+  //   fileName = "tgt_files/KimEtAl2019Rep_straddleCW_20200917_2.json";
+  //   grp = 's_CW';
+  // }
 
   // Implement following commented code to select a single target file
   //fileName = "tgt_files/KimEtAl2019Rep_hitCW.json"
@@ -299,8 +307,8 @@ function gameSetup(data) {
           ["The green dot will now be visible while you move towards the target.", // Message displayed when bb_mess == 1
           "Quickly move your green dot to the target.",
           "Press 'b' when you are ready to proceed."],
-          ["This is an instruction understanding check, you may proceed ONLY if you choose the correct choice.", // Message displayed when bb_mess == 2
-          "Choosing the wrong choice will result in early game termination and an incomplete HIT!",
+          ["This is an instruction understanding check.", // Message displayed when bb_mess == 2
+          "You may proceed ONLY if you choose the correct answer.",
           "Press 'a' if you should ignore the green dot and aim directly towards the target.",
           "Press 'b' if you should be aiming away from the target."],
           ["The green dot will now be hidden.",  // bb_mess == 3
@@ -479,7 +487,7 @@ function gameSetup(data) {
   //gameTimer = setTimeout(gameTimedOut, 3600000); // one hour timeout
 
   // have the targets centered about random locations
-  angleadd = Math.floor(Math.random()*360)+1;
+  angleadd = (Math.floor(Math.random()*7)+1)*45;
 
 }
 

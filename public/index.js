@@ -87,7 +87,8 @@ var subject = {
   race: null,
   clampQ: null,
   pointerQ: null,
-  comments: null
+  comments: null,
+  sname: null
 }
 
 // Function used to check if all questions were filled in info form, if so, starts the experiment 
@@ -150,6 +151,7 @@ function saveFeedback() {
   subject.clampQ = values[0].value;
   subject.pointerQ = values[1].value;
   subject.comments = values[2].value;
+  subject.sname = values[3].value;
   // Currently not employing the clampQ question, but can be used
   // if(!subject.clampQ) {
   //   alert("Please answer the first question! You can leave the second question blank.")
@@ -174,7 +176,8 @@ function refreshIndexJs() {
       race: null,
       clampQ: null,
       pointerQ: null,
-      comments: null
+      comments: null,
+      sname: null
   }
 
   //console.log(subject);
