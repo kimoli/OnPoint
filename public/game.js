@@ -179,8 +179,8 @@ function gameSetup(data) {
   // UNCOMMENT HERE IF YOU WANT TO SHOW POINTER TO MAKE AN ILLUSTRATIVE VIDEO
   //if (showPointer == 0) {
     // Hide the mouse from view 
-    $('html').css('cursor', 'url(images/transparentcursor.png), auto');
-    $('body').css('cursor', 'url(images/transparentcursor.png), auto;');
+    $('html').css('cursor', 'url(images/transparentcursor.png), none');
+    $('body').css('cursor', 'url(images/transparentcursor.png), none;');
   //} else {
     // show mouse as pointer (for recording example trials)
   //  $('html').css('cursor', 'pointer');
@@ -628,8 +628,8 @@ function gameSetup(data) {
     } else if (game_phase == SEARCHING) {
 
       // make sure the mouse pointer is off (if person leaves window the cursor can come back on)
-      $('html').css('cursor', 'url(images/transparentcursor.png), auto;');
-      $('body').css('cursor', 'url(images/transparentcursor.png), auto;');
+      $('html').css('cursor', 'url(images/transparentcursor.png), none;');
+      $('body').css('cursor', 'url(images/transparentcursor.png), none;');
 
       if (r <= target_dist/8) {
         cursor_show = true;

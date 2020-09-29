@@ -109,7 +109,7 @@ function checkInfo(){
   var code = values[5].value;
   subject.ethnicity = values[6].value;
   subject.race = values[7].value;
-  ccdx = Math.floor(Math.random()*10)-1;
+  ccdx = Math.floor(Math.random()*10);
   document.getElementById("ccd").innerHTML = ccds[ccdx];
 
   console.log(subject.handedness);
