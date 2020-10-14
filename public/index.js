@@ -4,8 +4,7 @@ This is all the non-game related content. E.g., collecting participant data, sta
 
 // Set to 'true' if you wish to only test the front-end (will not access databases)
 // **TODO** Make sure this is set to false before deploying!
-const noSave = false;
-
+const noSave = true;
 
 // Variables used for setting up the game
 var screen_height;
@@ -15,7 +14,7 @@ var ccds;
 var ccdx;
 
 // Possible completion codes
-ccds = ['forum', 'aisle', 'stamp', 'patch', 'horse', 'angle', 'light', 'onion', 'panel', 'marsh'];
+ccds = ['candy', 'forum', 'aisle', 'stamp', 'patch', 'horse', 'angle', 'light', 'onion', 'panel', 'marsh'];
 
 /* TEMPORARY USE OF ORIGINAL CODE TO TEST THINGS OUT */
 try {
@@ -23,6 +22,8 @@ try {
 } catch (e) {
   console.error(e);
 }
+
+var redirURL = null;
 
 // Setting up firebase variables
 const firestore = firebase.firestore();       // (a.k.a.) db
@@ -32,19 +33,76 @@ const trialcollection = firestore.collection("Trials");
 
 // Function to switch between HTML pages
 function show(shown, hidden) {
-  document.getElementById(shown).style.display='block';
-  document.getElementById(hidden).style.display='none';
+  document.getElementById(shown).style.display = 'block';
+  document.getElementById(hidden).style.display = 'none';
   return false;
 }
 
+function fadeOut(elementToFade) {
+  var element = document.getElementById(elementToFade);
+
+  element.style.opacity -= 0.1;
+  if (element.style.opacity < 0.0) {
+    element.style.opacity = 0.0;
+  } else {
+    setTimeout("fadeOut(\"" + elementToFade + "\")", 200);
+  }
+}
+
+function fadeIn(elementToFade) {
+  console.log("and here");
+  var element = document.getElementById(elementToFade);
+  console.log("and here");
+  console.log(element.style.opacity);
+  element.style.opacity += 0.1;
+  if (element.style.opacity > 1.0) {
+    element.style.opacity = 1.0;
+  } else {
+    setTimeout("fadeIn(\"" + elementToFade + "\")", 200);
+  }
+}
+
+
+// check that person was recruited to experiment and filled out consent form
+function checkOrigin() {
+  let url = new URL(window.location.href);
+  //let url = new URL('https://javascriptjeep.com?mode=night&page=2'); // for testing
+  let params = new URLSearchParams(url.search);
+  let recsrc = params.get('recsrc');
+  $('#welcome').fadeOut();
+  if (recsrc == null) { // if not recruited through SONA or mTurk, will have null
+    // switch to the commented-out strategy if you want to be able to get consent and use the participant
+    //setTimeout(displayConsent, 250);
+
+    // do not let person participate
+    setTimeout(kick, 250);
+  } else {
+    setTimeout(displayInstructions, 250);
+  }
+}
+
+function displayConsent() {
+  $('#container-consent').fadeIn();
+  $('#container-getConsentCode').fadeIn();
+}
+
+function kick() {
+  $('#no-entry').fadeIn();
+}
+
+function displayInstructions() {
+  $('#container-instructions1').fadeIn();
+}
+
+
 // Close window (function no longer in use for this version)
 function onexit() {
-  window.close(); 
+  window.close();
 }
 
 // Function used to enter full screen mode
 function openFullScreen() {
-  elem = document.getElementById('container-info'); 
+  elem = document.getElementById('container-info');
   if (elem.requestFullscreen) {
     elem.requestFullscreen();
     console.log("enter1")
@@ -75,24 +133,41 @@ function closeFullScreen() {
 
 // Object used track subject data (uploaded to database)
 var subject = {
-  id: null, 
+  id: null,
   age: null,
   sex: null,
   handedness: null,
   mousetype: null,
   returner: null,
+  recruitment: null,
   currTrial: 0,
   tgt_file: null,
   ethnicity: null,
   race: null,
   clampQ: null,
   pointerQ: null,
-  comments: null,
-  sname: null
+  startTm: null,
+  endTm: null,
+  comments: null
+}
+
+function checkConsent() {
+  var getValues = $("#consentForm").serializeArray();
+  var inputCode = getValues[0].value;
+  var realCode = 'initGame';
+  if (inputCode.localeCompare(realCode) == 0) {
+    $('#container-consent').hide();
+    $('#consentForm').hide();
+    $('#container-getConsentCode').hide();
+    $('#container-badConsentCode').hide();
+    $('#container-instructions1').show();
+  } else {
+    $('#container-badConsentCode').show();
+  }
 }
 
 // Function used to check if all questions were filled in info form, if so, starts the experiment 
-function checkInfo(){
+function checkInfo() {
   var actualCode = "rain"; // **TODO: Update depending on the "code" set in index.html
   var values = $("#infoform").serializeArray();
   // ADD SUBJECT ID HERE
@@ -109,7 +184,14 @@ function checkInfo(){
   var code = values[5].value;
   subject.ethnicity = values[6].value;
   subject.race = values[7].value;
-  ccdx = Math.floor(Math.random()*10);
+  subject.startTm = new Date();
+  
+  let url = new URL(window.location.href);
+  let params = new URLSearchParams(url.search);
+  let recsrc = params.get('recsrc');
+  subject.recruitment = recsrc;
+
+  ccdx = Math.floor(Math.random() * 10)+1;
   document.getElementById("ccd").innerHTML = ccds[ccdx];
 
   console.log(subject.handedness);
@@ -135,56 +217,83 @@ function createSubject(collection, subject) {
     return null;
   }
   return collection.doc(subject.id).set(subject)
-  .then(function() {
-    console.log(subject);
-    return true; 
-  })
-  .catch(function(err) {
-    console.error(err);
-    throw err;
-  });
+    .then(function () {
+      console.log(subject);
+      return true;
+    })
+    .catch(function (err) {
+      console.error(err);
+      throw err;
+    });
 }
 
-// Function used to save the feedback from the final HTML page
+// Function used to save the feedback from the final HTML page and get ready to send participant back to SONA
 function saveFeedback() {
   var values = $("#feedbackForm").serializeArray();
   subject.clampQ = values[0].value;
   subject.pointerQ = values[1].value;
   subject.comments = values[2].value;
-  subject.sname = values[3].value;
+  subject.endTm = new Date();
   // Currently not employing the clampQ question, but can be used
   // if(!subject.clampQ) {
   //   alert("Please answer the first question! You can leave the second question blank.")
   //   return;
   // }
+
   createSubject(subjectcollection, subject);
-  show('final-page', 'container-not-an-ad');
+  checkExit();
+}
+
+
+// check which end of experiment page to show
+function checkExit() {
+  let url = new URL(window.location.href);
+  console.log(window.location.href);
+  //let url = new URL('https://javascriptjeep.com?mode=night&page=2'); // for testing
+  let params = new URLSearchParams(url.search);
+  let recsrc = params.get('recsrc');
+  if (recsrc == "SONA") {
+    params.append('credit_token', "abcd")
+    params.delete('recsrc')
+    var qparstr = params.toString();
+    redirURL = 'https://princeton.sona-systems.com/webstudy_credit.aspx' + '?' + qparstr;
+    $('#final-page-SONA').show();
+  } else if (recsrc == "mTurk") {
+    $('#final-page-mturk').show();
+  } else { // if person did not come in from mTurk or SONA
+    $('#final-page-other').show();
+  }
+  $('#container-not-an-ad').hide();
+}
+
+function redirectButton() {
+  window.location.replace(redirURL);
 }
 
 // not clear to me that this matters. Trying to solve number of trials not getting reset
 function refreshIndexJs() {
   subject = {
-      id: null, 
-      age: null,
-      sex: null,
-      handedness: null,
-      mousetype: null,
-      returner: null,
-      currTrial: 0,
-      tgt_file: null,
-      ethnicity: null,
-      race: null,
-      clampQ: null,
-      pointerQ: null,
-      comments: null,
-      sname: null
+    id: null,
+    age: null,
+    sex: null,
+    handedness: null,
+    mousetype: null,
+    returner: null,
+    currTrial: 0,
+    tgt_file: null,
+    ethnicity: null,
+    race: null,
+    clampQ: null,
+    pointerQ: null,
+    comments: null,
+    sname: null
   }
 
   //console.log(subject);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-// // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+document.addEventListener('DOMContentLoaded', function () {
+  // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
   // // The Firebase SDK is initialized and available here!
   //
   // firebase.auth().onAuthStateChanged(user => { });

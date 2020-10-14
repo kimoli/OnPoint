@@ -29,7 +29,7 @@ def generateTargetAngles(numTargets):
     
     return angleList
 
-def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, targetDistance, numDemoCycles, demoTargetAngle):
+def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, targetDistance, numDemoCycles, demoTargetAngle, filenum):
     # Ensure non demo cycles add up
     if (movementCycle != sum(cycleDistribution)):
         raise Exception('Number of non demo cycles do not add up. Should have ' + str(movementCycle) + ' cycles, but has ' + str(sum(cycleDistribution)) + '.')
@@ -71,7 +71,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         trialNums[i] = i + 1
         aimingLandmarks[i] = 0
         tgtDistance[i] = targetDistance
-        targetSize[i] = 3.5 # 3.5 causes straddle (on my screen) with a 1.75 degree error, 9 causes hit
+        targetSize[i] = 9 # 3.5 causes straddle (on my screen) with a 1.75 degree error, 9 causes hit
         if i < base_fb1 :# baseline phase with online feedback, will have cycleDistribution[0] of these trials for every target
             onlineFB[i] = 1
             endpointFB[i] = 1
@@ -178,12 +178,20 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, ta
         print ("value: ", jsonData[key])
         print ("")
 
-    with open('KimEtAl2019Rep_straddle_20200917_2.json', 'w') as outfile:
+    basename = 'hit_ccw_'
+    filetype = '.json'
+    tempnum = str(filenum)
+    while (len(tempnum)<3):
+        tempnum = '0' + tempnum
+    filename = basename + tempnum + filetype
+    with open(filename, 'w') as outfile:
         json.dump(jsonData, outfile)
+    print('Generated ' + filename)
 
 
 nonDemoCycles = [1, 2, 1, 10, 0]
-generateJSON(8, 14, nonDemoCycles, 1.75, 80, 1, 270)
+for iter in range(1, 101):
+    generateJSON(8, 14, nonDemoCycles, 1.75, 80, 1, 270, iter)
 """
 The above call 'generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270)' will generate a target file with:
 - 2 targets

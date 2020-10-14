@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="static/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="static/style.css" type="text/css" />
 
+    <!-- get URLSearchParams-->
+    <script src="https://unpkg.com/@ungap/url-search-params@0.2.2/min.js" ></script>
+   
     <!-- update the version number as needed -->
     <script src="./__/firebase/6.6.1/firebase-app.js"></script>
     <!-- include only the Firebase features as you need -->
@@ -88,93 +91,105 @@
           inset 0 -2px 2px rgba(0,0,0,0.5), /*bottom internal shadow*/ 
           inset 0 2px 2px rgba(255,255,255,0.8); /*top internal highlight*/;
         float:right}
+      .startButton {
+        border: 2px solid black;
+        color: black;
+        padding: 8px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-family:Verdana;
+        font-size: 16pt;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 30px;
+        box-shadow: 
+          0 2px 4px #fff, /*bottom external highlight*/
+          0 -1px 1px #666, /*top external shadow*/ 
+          inset 0 -2px 2px rgba(0,0,0,0.5), /*bottom internal shadow*/ 
+          inset 0 2px 2px rgba(255,255,255,0.8); /*top internal highlight*/;
+        float:center}
       hr.class-1 { 
         border-top: 2px solid #000000; 
         } 
+
+      #parent {
+        position:absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        margin:auto;
+        margin-top:50px;
+        margin-left: auto;
+        margin-right: auto;
+        width:500px;
+      }
+
+      #child {
+        position: relative;
+        left:140px;
+      }
     </style>
 
   <!--</head>
   <body>
    <main class="container">
+
      <!-- Consent Page-->
-    <div id="container-consent">
+     <div id="welcome" class="bodytext">
+      <div id="parent">
+        <img src="images/welcome.png">
+        <div id="child"><br>
+          <button type="button" class="startButton" onClick="checkOrigin();">
+            Let's get started! <span class="glyphicon glyphicon-hand-right"></span>
+          </button>
+        </div>
+      </div>
+     </div>
+
+    <div id="container-consent" style = "display:none" >
       <div id="consent" class="bodytext">
-          <h1><b><i>Welcome</i></b></h1>
-          <h3>Please read the following terms and decide whether you would like to participate in this experiment:</h2> 
-          
-          <div class="consent">
-              <!--<p><b>Title of Research: </b> Classification of Motor Learning Curves<br>
-                <b>Principal Investigator: </b> Jordan A. Taylor, PhD<br>                
-                <b>Principal Investigator's Department: </b> Psychology<br>
-                <br>
-                You are being invited to take part in a research study. Before you decide to participate in this study, it is important that you understand why the research is being done and what it will involve. Please take the time to read the following information carefully. Please ask the researcher if there is anything that is not clear or if you need more information.<br>
-                <br>
-                <b><u>Purpose of the Research:</u></b> <br>
-                You are being invited to participate in a study of motor and cognitive processes conducted in the Intelligent Performance and Adaptation Laboratory, directed by Professor Jordan Taylor, in the Department of Psychology at Princeton University. The research deals with how people acquire and produce certain motor skills and how visual and auditory information are used to guide actions.<br>
-                <br>
-                <b><u>Study Procedures:</u></b> <br>
-                You will be asked to respond to images on a screen using your keyboard and/or mouse. If you decide to participate in this project, please understand that your participation is voluntary and you have the right to withdraw your consent or discontinue participation at any time. <br>
-                Your total expected time commitment for this study may vary, but is at maximum one hour. <br>
-                <br>
-                <b><u>Benefits and Risks:</u></b> <br>
-                It is important that you understand that there is no direct benefit to you anticipated from your participation in this study.<br>
-                There is a slight chance you may feel frustrated or uncomfortable if the task is difficult for you to do, but you are free to discontinue your participation in the study if you choose. Please let us know if you feel fatigued or uncomfortable at any time during the experiment.<br>
-                <br>
-                <b><u>Alternatives:</u></b> <br>
-                The alternative to participating in this particular study is to not participate.<br>
-                <br>
-                <b><u>Confidentiality:</u></b> <br>
-                All records from this study will be kept confidential. Your responses will be kept private, and we will not include any information that will make it possible to identify you in any report we might publish. Research records will be stored securely in a locked cabinet and/or on password-protected computers. The research team will be the only party that will have access to your data.<br>
-                <br>
-                <b><u>Compensation:</u></b> <br>
-                You will be paid an honorarium for participation at a rate of $3 per hour.<br>
-                <br>
-                <b><u>Who to contact with questions:</u></b>
-              </p>
-              <p style="margin-left: 40px">1. PRINCIPAL INVESTIGATOR</p>
-              <p style="margin-left: 80px">Jordan Taylor, PhD<br>429 Peretsman-Scully Hall<br>office: (609) 258-4648<br>email: jordanat@princeton.edu</p>
-              <p style="margin-left: 40px">2. If you have questions regarding your rights as a research subject, or if problems arise which you do not feel you can discuss with the Investigator, please contact the Institutional Review Board at:</p>
-              <p style="margin-left: 80px">Assistant Director, Research Integrity and Assurance<br>Phone: (609) 258-8543<br>Email: irb@princeton.edu</p>
-              <hr />
-              <p>3. I understand the information that was presented and that:</p>
-              <p style="margin-left: 40px">A. My participation is voluntary, and I may withdraw my consent and discontinue participation in the project at any time.  My refusal to participate will not result in any penalty.</p>
-              <p style="margin-left: 40px">B. I do not waive any legal rights or release Princeton University, its agents, or you from liability for negligence.</p>
-              <p>4. I hereby give my consent to be the subject of your research.</p>
-            </br>
-          -->
-              <p><b>Title of Experiment: </b>Help Olivia find out if this thing works<br>
-              <br>
-                You are being invited to test out a prospective research study. Please ask the researcher if there is anything that is not clear or if you need more information.<br>
-              <br>
-                <b><u>Purpose of the Research:</u></b> <br>
-                You are being invited to participate in a study of motor and cognitive processes conducted in the Intelligent Performance and Adaptation Laboratory, directed by Professor Jordan Taylor, in the Department of Psychology at Princeton University. The research deals with how people acquire and produce certain motor skills and how visual and auditory information are used to guide actions.<br>
-                <br>
-                <b><u>Study Procedures:</u></b> <br>
-                You will be asked to respond to images on a screen using your keyboard and/or mouse. If you decide to participate in this project, please understand that your participation is voluntary and you have the right to withdraw your consent or discontinue participation at any time. <br>
-                Your total expected time commitment for this study may vary, but is expected to be 15-20 minutes. <br>
-                <br>
-                <b><u>Benefits and Risks:</u></b> <br>
-                It is important that you understand that there is no direct benefit to you anticipated from your participation in this study.<br>
-                There is a slight chance you may feel frustrated or uncomfortable if the task is difficult for you to do, but you are free to discontinue your participation in the study if you choose. Please let us know if you feel fatigued or uncomfortable at any time during the experiment.<br>
-                <br>
-                <b><u>Alternatives:</u></b> <br>
-                The alternative to participating in this particular study is to not participate.<br>
-                <br>
-                <b><u>Confidentiality:</u></b> <br>
-                All records from this study will be kept confidential, and these data will not be published. If you so choose, you may provide your name at the end of the study so that the researcher can share your results with you. On my end, research records will be stored securely on a password-protected computer, and only researchers in this laboratory will be able to see them. If you elect to receive your data, what happens to them from there will be up to you.<br>
-                <br>
-            <button type="button" class="pillbuttonLeft" onClick="return show('decline-expt', 'container-consent');">
-              I do <u><b>NOT</b></u> consent to these terms.
-            </button>
-            <button type="button" class="pillbuttonRight" onClick="window.scrollTo(0,0);return show('container-instructions1', 'container-consent');">
-              I Agree 
-            </button>
-            </br></br>
+        <h1><b><i>Welcome</i></b></h1>
+        <be>
+        <h3>Please read the following terms and decide whether you would like to participate in this experiment:</h3> 
+        <br>
+        <center>
+          <iframe src="https://qfreeaccountssjc1.az1.qualtrics.com/jfe/form/SV_aWBvhhZw1IdU1xz" width="600" height="600"></iframe>
+        </center>
+        <br> <br>
+        
           </div>
           
       </div>
     </div>
-     
+    
+    <div id="container-getConsentCode" style = "display:none" class="bodytext">
+      <form id='consentForm'>
+      <center>   
+        <div class="question" id="consentCode">
+          If you agreed to participate, please enter the consent code you received to continue:<br>
+          <input id="consentCode" type="text" name="consentCode" value="">
+        </div>
+
+
+        <button type="button" id="end" value="final" onClick="checkConsent();">
+          Continue
+        </button>
+
+        <br> <br>
+        If you would prefer not to participate, you can close this window at any time.</center>
+      </center>
+      </form>
+
+
+    </div>
+
+    <div id="container-badConsentCode" style = "display:none" class="bodytext">
+      <center><h3>Incorrect consent code entered. Please double check the consent code and try again.</h3></center>
+    </div>
+
+
     <!-- Instruction Page 1-->
     <div id="container-instructions1" style="display:none" class="bodytext">
       <a href="#container-instructions1"></a>
@@ -195,9 +210,9 @@
         </p>
       <hr class="class-1"/>
       <center>
-            <button type="button" class="pillbuttonLeft" onClick="window.scrollTo(0,0);return show('container-consent', 'container-instructions1');">
+            <!--<button type="button" class="pillbuttonLeft" onClick="window.scrollTo(0,0);return show('container-consent', 'container-instructions1');">
             <span class="glyphicon glyphicon-arrow-left"></span> Back 
-            </button>
+            </button>-->
             <button type="button" class="pillbuttonRight" onClick="window.scrollTo(0,0);return show('container-instructions2', 'container-instructions1');">
             Next <span class="glyphicon glyphicon-arrow-right"></span>
             </button>
@@ -377,12 +392,12 @@
               </div>
 
               <div class="questions" id="sex">
-                  Gender:<br>
+                  Sex:<br>
                   <select id="gender" name="gender">
                       <option value=""></option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
-                      <option value="other">Genderqueer/Non-Binary</option>
+                      <!--<option value="other">Intersex</option>-->
                   </select>
               </div>
 
@@ -492,7 +507,7 @@
             <h1><b>Thanks for your participation!</b></h1>
             <hr class="class-1"/>
 
-            <h2>Now just one more question and then you're done!</h2>
+            <h2>Now just a few more questions and then you're done!</h2>
             
             <form id="feedbackForm">
                 
@@ -522,11 +537,6 @@
                 <div class="question" id="feedback">
                     Did you have any issues with the experiment?<br>
                     <input id="feedback" type="text" name="feedback" value="">
-                </div>
-
-                <div class="question" id="sname">
-                    If you would like to see your data from this experiment, please enter your name:<br>
-                    <input id="sname" type="text" name="sname" value="">
                 </div>
 
             </form>
@@ -587,15 +597,44 @@
     </div>
 
     <!-- Final Page -->
-    <div id="final-page" style="display:none" class="bodytext">
+    <div id="final-page-mturk" style="display:none" class="bodytext">
         
                     <h1><b>Your responses have been saved, thank you!</b></h1>
                     <hr class="class-1"/>
 
-                    <!--<h2>If you do not receive compensation in 3 days please email oakim@princeton.edu.</h2>-->
-                    <h2>Your completion code is: <span id="ccd"></span> </h2>
+                    <h2>Your completion code is: <strong><span id="ccd"></span><strong> </h2>
+                    <h2>Enter this code into your mTurk HIT to receive compensation for your time.</h2>
+                    <h2>If you do not receive compensation in 3 days, please email oakim@princeton.edu.</h2>
                     <h2>Goodbye :)</h2>
+    </div>
+    <div id="final-page-SONA" style="display:none" class="bodytext">
         
+      <h1><b>Your responses have been saved, thank you!</b></h1>
+      <hr class="class-1"/>
+
+      <h2>If you do not receive credit for participating immediately after clicking this button below, please email oakim@princeton.edu.</h2>
+      <button type="button" id="claimCredit" value="final" onClick="redirectButton();">
+        Claim Credit
+      </button>
+
+      <h2>Debriefing document goes here.</h2>
+
+    </div>
+    <div id="final-page-other" style="display:none" class="bodytext">
+        
+      <h1><b>Your responses have been saved, thank you!</b></h1>
+      <hr class="class-1"/>
+      <h2>Goodbye :)</h2>
+
+    </div>
+    <div id="no-entry" style="display:none" class="bodytext">
+        
+      <h1><b>Not right now...</b></h1>
+      <hr class="class-1"/>
+
+      <h2>Thank you for your interest, but we are not accepting all participants right now.</h2>
+      <h2>If you believe you have reached this page in error, please reach out to oakim@princeton.edu to explain your situation and get access to the experiment.</h2>
+      <h2>Goodbye :)</h2>
     </div>
 
     <!-- Person did not consent -->

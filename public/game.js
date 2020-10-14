@@ -29,6 +29,7 @@ var subjTrials = {
   postm: null
 }
 
+var temp = {};
 
 // Variables used throughout the experiment
 var fileName;
@@ -116,21 +117,40 @@ var gameTimer;
 var gameRefreshed = false;
 var prevTrials = 0;
 
-
 // specify at the top here whether mouse pointer will be shown or not
 //var showPointer = 0;
 
 // Function used to start running the game
 // **TODO** Update the 'fileName' to path to targetfile
 function startGame() {
-  d = Math.floor(Math.random() * 2);
-   if (d == 0) {
-     fileName = "tgt_files/KimEtAl2019Rep_straddle_20200917_2.json"; 
-     grp = 's_CCW';
-   } else {
-     fileName = "tgt_files/KimEtAl2019Rep_straddleCW_20200917_2.json";
-     grp = 's_CW';
-   }
+  $.getJSON("active_tgt_files/tgtfilelist.json", function(jsonout){
+    // load the list of possible filenames
+    tgtfilenames = jsonout;
+    tgtfilelist = tgtfilenames.filename;
+    console.log(tgtfilelist);
+
+    // randomly select one and use it to run the game
+    d = Math.floor(Math.random() * tgtfilelist.length);
+    fileName = tgtfilelist[d];
+    console.log(fileName);
+    grp = fileName[0];
+    subject.tgt_file = fileName;
+    subjTrials.group_type = grp; // **TODO** update group_type to manage the groups
+    $.getJSON("active_tgt_files/" + fileName, function(json){
+      target_file_data = json;
+      gameSetup(target_file_data);
+    });
+  });
+
+  
+  // if (d == 0) {
+  //  fileName = "active_tgt_files/strad_cw_001.json"; 
+  //   grp = 's_CCW';
+  // } else {
+  //   fileName = "active_tgt_files/strad_cw_001.json";
+  //   grp = 's_CW';
+  // }
+
   // Implement following commented code for uniform random selection of target files
   // d = Math.floor(Math.random() * 4);
   // if (d == 0) {
@@ -150,12 +170,7 @@ function startGame() {
   // Implement following commented code to select a single target file
   //fileName = "tgt_files/KimEtAl2019Rep_hitCW.json"
 
-  subject.tgt_file = fileName;
-  subjTrials.group_type = grp; // **TODO** update group_type to manage the groups
-  $.getJSON(fileName, function(json){
-      target_file_data = json;
-      gameSetup(target_file_data);
-    });
+  
 }
 
 

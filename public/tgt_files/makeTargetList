@@ -1,0 +1,8 @@
+import os
+import json
+
+os.chdir('C:/Users/kimol/Documents/GitHub/OnPoint/public/active_tgt_files')
+jsonData["filename"]=os.listdir()
+
+with open(filename, 'w') as outfile:
+    json.dump(jsonData, outfile)
