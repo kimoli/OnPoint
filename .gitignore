@@ -81,3 +81,5 @@ aim-at-dot-firebase-adminsdk-phzq6-e4a7e21a06.json
 db_csv_testFetch.py
 python_scripts/testForPandas.py
 python_scripts/testingagain.py
+db_csv_fetchSpecifiedData.py
+db_fetchAllSubjs.py
