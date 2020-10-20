@@ -1,8 +1,11 @@
 import os
 import json
 
+jsonData = {}
+
 os.chdir('C:/Users/kimol/Documents/GitHub/OnPoint/public/active_tgt_files')
 jsonData["filename"]=os.listdir()
 
+filename = 'tgtfilelist.json'
 with open(filename, 'w') as outfile:
     json.dump(jsonData, outfile)

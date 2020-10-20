@@ -133,7 +133,7 @@ function startGame() {
     d = Math.floor(Math.random() * tgtfilelist.length);
     fileName = tgtfilelist[d];
     console.log(fileName);
-    grp = fileName[0];
+    grp = fileName.substring(0,6);
     subject.tgt_file = fileName;
     subjTrials.group_type = grp; // **TODO** update group_type to manage the groups
     $.getJSON("active_tgt_files/" + fileName, function(json){
@@ -291,7 +291,7 @@ function gameSetup(data) {
   curTime = NaN;
 
   instrucTimeLimit = 60000; // 1 min
-  ititimelimit = 90000; // 1.5 mins
+  ititimelimit = 60000; // 1 min
   //instrucTimeLimit = 30000; // 30 s for testing
   //ititimelimit = 30000; // 30 s for testing
 
@@ -341,7 +341,7 @@ function gameSetup(data) {
           "Press SPACE BAR when you are ready to proceed."]];
 
   // Setting size of the displayed letters and sentences
-  line_size = Math.round(screen_height/30)
+  line_size = Math.round(screen_height/40)
   message_size = String(line_size).concat("px"); 
 
   // initialize a timer for starting the experiment

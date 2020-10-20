@@ -73,8 +73,9 @@ node_modules/
 # .DS_Store ignored
 .DS_Store
 
-# firebase secret access key
+# firebase secret access keys
 test-onpoint-firebase-adminsdk-2eveo-cc6ba9156c.json
+aim-at-dot-firebase-adminsdk-phzq6-e4a7e21a06.json
 
 # firebase pull data python function
 db_csv_testFetch.py

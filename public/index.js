@@ -14,7 +14,7 @@ var ccds;
 var ccdx;
 
 // Possible completion codes
-ccds = ['candy', 'forum', 'aisle', 'stamp', 'patch', 'horse', 'angle', 'light', 'onion', 'panel', 'marsh'];
+ccds = ['some', 'body', 'once', 'toldme', 'theworld', 'wasgonna', 'rollme', 'iaintthe', 'sharpest', 'toolin', 'theshed'];
 
 /* TEMPORARY USE OF ORIGINAL CODE TO TEST THINGS OUT */
 try {
@@ -144,7 +144,6 @@ var subject = {
   tgt_file: null,
   ethnicity: null,
   race: null,
-  clampQ: null,
   pointerQ: null,
   startTm: null,
   endTm: null,
@@ -172,7 +171,7 @@ function checkInfo() {
   var values = $("#infoform").serializeArray();
   // ADD SUBJECT ID HERE
   randomval = Math.floor(Math.random() * 999999999);
-  exptstring = "OKTTT_";
+  exptstring = "OK001_";
   exptstring = exptstring.concat(randomval.toString())
   subject.id = exptstring.concat('_');
   console.log(subject.id);
@@ -217,22 +216,22 @@ function createSubject(collection, subject) {
     return null;
   }
   return collection.doc(subject.id).set(subject)
-    .then(function () {
-      console.log(subject);
-      return true;
-    })
-    .catch(function (err) {
-      console.error(err);
-      throw err;
-    });
+  .then(function () {
+    console.log(subject);
+    return true;
+  })
+  .catch(function (err) {
+    console.error(err);
+    throw err;
+  });
 }
+
 
 // Function used to save the feedback from the final HTML page and get ready to send participant back to SONA
 function saveFeedback() {
   var values = $("#feedbackForm").serializeArray();
-  subject.clampQ = values[0].value;
-  subject.pointerQ = values[1].value;
-  subject.comments = values[2].value;
+  subject.pointerQ = values[0].value;
+  subject.comments = values[1].value;
   subject.endTm = new Date();
   // Currently not employing the clampQ question, but can be used
   // if(!subject.clampQ) {
@@ -241,8 +240,10 @@ function saveFeedback() {
   // }
 
   createSubject(subjectcollection, subject);
+
   checkExit();
 }
+
 
 
 // check which end of experiment page to show
