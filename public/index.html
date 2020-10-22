@@ -12,6 +12,7 @@
 
     <link rel="stylesheet" href="static/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="static/style.css" type="text/css" />
+    <link rel="stylesheet" href="static/three-quarters.css"> <!-- thanks: https://github.com/jlong/css-spinners -->
 
     <!-- get URLSearchParams-->
     <script src="https://unpkg.com/@ungap/url-search-params@0.2.2/min.js" ></script>
@@ -132,20 +133,15 @@
       }
     </style>
 
-  <!--</head>
-  <body>
-   <main class="container">
+  </head>
+  <body onload='checkOrigin()'>
+   
 
      <!-- Consent Page-->
      <div id="welcome" class="bodytext">
-      <div id="parent">
-        <img src="images/welcome.png">
-        <div id="child"><br>
-          <button type="button" class="startButton" onClick="checkOrigin();">
-            Let's get started! <span class="glyphicon glyphicon-hand-right"></span>
-          </button>
-        </div>
-      </div>
+      <center><div class="three-quarters-loader">
+          Loading...
+      </div></center>
      </div>
 
     <div id="container-consent" style = "display:none" >
@@ -541,12 +537,12 @@
         <div class="bodytext">
                     <h1><b>Oh no!</b></h1>
                     <hr />
-                    <p>If you are seeing this page it means you did not pass an attention or understanding test.</p>
+                    <p>If you are seeing this page, it means you did not pass an attention or understanding test.</p>
                     <p>This task requires your full attention, thus we kindly ask you to exit this HIT.</p>
                     <p>We're sorry for this inconvenience.</p>
-                    <!--
-                    <h2>You have a wonderful life now.</h2>
-                    -->
+                    <br>
+                    If you think something's gone wrong, please email the following code to oakim@princeton.edu. Please include "Incomplete Aiming Experiment" in the subject line.<br>
+                    Your code is: <strong><span id="Fccd">(innerHTML)</span></strong>
         </div>
     </div>
 
@@ -555,8 +551,12 @@
         <div class="bodytext">
                     <h1><b>Experiment Timed Out</b></h1>
                     <hr class="class-1"/>
-                    <p>If you are seeing this page it means you have exceeded the time limit (1 hour) for completing this experiment.</p>
+                    <p>If you are seeing this page, it means you have exceeded the time limit (1 hour) for completing this experiment.</p>
+                    <p>This task requires your full attention, thus we kindly ask you to exit this HIT.</p>
                     <p>We're sorry for this inconvenience.</p>
+                    <br>
+                    If you think something's gone wrong, please email the following code to oakim@princeton.edu. Please include "Incomplete Aiming Experiment" in the subject line.<br>
+                    Your code is: <strong><span id="Tccd">(innerHTML)</span></strong>
         </div>
     </div>
 
@@ -565,9 +565,12 @@
         <div class="bodytext">
                     <h1><b>Are you still there?</b></h1>
                     <hr class="class-1"/>
-                    <p>If you are seeing this page it means you haven't completed a trial in >1 minute.</p>
+                    <p>If you are seeing this page, it means you haven't completed a trial in >1 minute.</p>
                     <p>This task requires your full attention, thus we kindly ask you to exit this HIT.</p>
                     <p>We're sorry for this inconvenience.</p>
+                    <br>
+                    If you think something's gone wrong, please email the following code to oakim@princeton.edu. Please include "Incomplete Aiming Experiment" in the subject line.<br>
+                    Your code is: <strong><span id="ITIccd">(innerHTML)</span></strong>
         </div>
     </div>
 
@@ -576,9 +579,12 @@
         <div class="bodytext">
                     <h1><b>Are you still there?</b></h1>
                     <hr class="class-1"/>
-                    <p>If you are seeing this page it means you spent >1 minute on the instruction page.</p>
+                    <p>If you are seeing this page, it means you spent >1 minute on the instruction page.</p>
                     <p>This task requires your full attention, thus we kindly ask you to exit this HIT.</p>
                     <p>We're sorry for this inconvenience.</p>
+                    <br>
+                    If you think something's gone wrong, please email the following code to oakim@princeton.edu. Please include "Incomplete Aiming Experiment" in the subject line.<br>
+                    Your code is: <strong><span id="ITccd">(innerHTML)</span></strong>
         </div>
     </div>
 
@@ -633,7 +639,7 @@
                     <p>If you have terminated the experiment in error, you may refresh this page to revisit the consent form.</p>
         </div>
     </div>
-   </main>
+   
   </body>
 
   <script src="static/lib/jquery-min.js"></script>

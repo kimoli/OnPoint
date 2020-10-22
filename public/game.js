@@ -231,21 +231,11 @@ function gameSetup(data) {
   trial_type;
 
 
-  // Setting parameters and drawing the center start circle
+  // Setting parameters
   start_x = screen_width/2;
   start_y = screen_height/2;
   start_radius = Math.round(target_dist * 4.5 / 80.0);
   start_color = 'lime';
-
-  svgContainer.append('circle')
-        .attr('cx', start_x)
-        .attr('cy', start_y)
-        .attr('r', start_radius)
-        .attr('fill', 'none')
-        .attr('stroke', start_color)
-        .attr('stroke-width', 2)
-        .attr('id', 'start')
-        .attr('display', 'none');
 
 
   // Setting parameters and drawing the target 
@@ -278,7 +268,7 @@ function gameSetup(data) {
   cursor_y = 0;
   cursor_radius = Math.round(target_dist * 1.75 * 1.5/80.0);
   cursor_color = 'lime';
-  search_color = 'yellow';
+  search_color = 'palegreen';
 
   mousepos_x = new Array(200).fill(-1); // only take up to 1 s of data
   mousepos_y = new Array(200).fill(-1);
@@ -310,11 +300,46 @@ function gameSetup(data) {
         .attr('cx', start_x)
         .attr('cy', start_y)
         .attr('r', searchRad)
-        .attr('fill', 'none')
-        .attr('stroke', 'search_color')
+        .attr('fill', search_color)
+        .attr('stroke', search_color)
         .attr('stroke-width', 2)
         .attr('id', 'search_ring')
         .attr('display', 'none');
+  
+  // Drawing the rectangles that will hide parts of the search ring to make it a wedge
+  svgContainer.append('rect')
+        .attr('x', start_x)
+        .attr('y', start_y)
+        .attr('width', screen_height/2)
+        .attr('height', screen_width/2)
+        .attr('fill', 'black')
+        .attr('stroke', 'black')
+        .attr('stroke-width', 2)
+        .attr('id', 'search_rect1')
+        .attr('display', 'none');
+
+  svgContainer.append('rect')
+        .attr('x', start_x)
+        .attr('y', start_y)
+        .attr('width', screen_height/2)
+        .attr('height', screen_width/2)
+        .attr('fill', 'black')
+        .attr('stroke', 'black')
+        .attr('stroke-width', 2)
+        .attr('id', 'search_rect2')
+        .attr('display', 'none');
+
+  // Drawing the start circle (want this to be on top... draw last?)
+  svgContainer.append('circle')
+        .attr('cx', start_x)
+        .attr('cy', start_y)
+        .attr('r', start_radius)
+        .attr('fill', 'none')
+        .attr('stroke', start_color)
+        .attr('stroke-width', 2)
+        .attr('id', 'start')
+        .attr('display', 'none');
+  
 
   // The between block messages that will be displayed
   // **TODO** Update messages depending on your experiment
@@ -501,8 +526,9 @@ function gameSetup(data) {
   //setTimeout(gameTimedOut, 30000); // 30s timeout for testing
   //gameTimer = setTimeout(gameTimedOut, 3600000); // one hour timeout
 
-  // have the targets centered about random locations
-  angleadd = (Math.floor(Math.random()*7)+1)*45;
+  // have the targets centered about random chunks of the workspace
+  angleadd =  (Math.floor(Math.random()* (360/Math.max(rotation)) ))* Math.max(rotation); // 
+  centerOfTgtWedge = Math.max(rotation)/2 + angleadd;
 
 }
 
@@ -591,9 +617,9 @@ function gameSetup(data) {
     // Calculations done in the HOLDING phase
     } else if (game_phase == HOLDING) {
       if (r <= start_radius) { // Fill the center if within start radius
-        d3.select('#cursor').attr('display', 'none'); 
-        d3.select('#start').attr('fill', start_color);
         d3.select('#search_ring').attr('r',r).attr('display', 'none');
+        d3.select('#start').attr('fill', start_color);
+        d3.select('#cursor').attr('display', 'none'); 
       } else {
         d3.select('#start').attr('fill', 'none');
         if (r <= target_dist/8) {
@@ -613,9 +639,10 @@ function gameSetup(data) {
             //$('html').css('cursor', 'pointer');
             //$('body').css('cursor', 'pointer');
           //}
+          
+          d3.select('#search_ring').attr('r',r);
           d3.select('#cursor').attr('display', 'block'); // show cursor
           d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
-          d3.select('#search_ring').attr('r',r);
         } else {
           // UNCOMMENT HERE IF YOU WANT TO SHOW POINTER TO MAKE AN ILLUSTRATIVE VIDEO
           //if (showPointer == 1) { 
@@ -623,8 +650,8 @@ function gameSetup(data) {
             //$('html').css('cursor', 'pointer');
             //$('body').css('cursor', 'pointer');
           //}
-          d3.select('#cursor').attr('display', 'none'); // hide the cursor
           d3.select('#search_ring').attr('stroke', search_color).attr('r',r).attr('display', 'block');
+          d3.select('#cursor').attr('display', 'none'); // hide the cursor
         }
 
         // Displaying searching too slow message if threshold is crossed
@@ -663,9 +690,9 @@ function gameSetup(data) {
           //$('html').css('cursor', 'pointer');
           //$('body').css('cursor', 'pointer');
         //}
+        d3.select('#search_ring').attr('r',r);
         d3.select('#cursor').attr('display', 'block'); // show cursor
         d3.select('#cursor').attr('cx', cursor_x).attr('cy', cursor_y).attr('display', 'block');
-        d3.select('#search_ring').attr('r',r);
       } else {
         // UNCOMMENT HERE IF YOU WANT TO SHOW POINTER TO MAKE AN ILLUSTRATIVE VIDEO
         //if (showPointer == 1) { 
@@ -673,8 +700,8 @@ function gameSetup(data) {
           //$('html').css('cursor', 'pointer');
           //$('body').css('cursor', 'pointer');
         //}
-        d3.select('#cursor').attr('display', 'none'); // hide the cursor
         d3.select('#search_ring').attr('stroke', search_color).attr('r',r).attr('display', 'block'); // show the search ring
+        d3.select('#cursor').attr('display', 'none'); // hide the cursor
       }
 
       // Displaying the start circle and trial count 
@@ -1053,8 +1080,16 @@ function badGame() {
   d3.select('#countdown').attr('display', 'none');
   d3.select('#trialcount').attr('display', 'none');
 
-  show('container-failed', 'container-exp');
-  
+  let url = new URL(window.location.href);
+  //let url = new URL('https://javascriptjeep.com?mode=night&page=2'); // for testing
+  let params = new URLSearchParams(url.search);
+  params.set('recsrc', encodeURIComponent(btoa('gameF')));
+  params.append('t', encodeURIComponent(btoa(subjTrials.trialNum)));
+  let paramstring = params.toString();
+  let temp1 = url.pathname;
+  let temp2 = temp1.concat('?');
+  let newURL = temp2.concat(paramstring);
+  window.location.replace(newURL);
 }
 
 // Function that ends the game appropriately after the experiment has been completed
@@ -1079,8 +1114,7 @@ function endGame() {
   d3.select('#countdown').attr('display', 'none');
   d3.select('#trialcount').attr('display', 'none');
 
-  show('container-not-an-ad', 'container-exp');
-  
+  show('final-page-mturk', 'container-exp');
 }
 
 // Function that ends the game prematurely if the participant is taking >60 mins
@@ -1107,10 +1141,16 @@ function gameTimedOut() {
   d3.select('#countdown').attr('display', 'none');
   d3.select('#trialcount').attr('display', 'none');
 
-  refreshGameJs();
-  refreshIndexJs();
-
-  show('container-timeout', 'container-exp');
+  let url = new URL(window.location.href);
+  //let url = new URL('https://javascriptjeep.com?mode=night&page=2'); // for testing
+  let params = new URLSearchParams(url.search);
+  params.set('recsrc', encodeURIComponent(btoa('gameT')));
+  params.append('t', encodeURIComponent(btoa(subjTrials.trialNum)));
+  let paramstring = params.toString();
+  let temp1 = url.pathname;
+  let temp2 = temp1.concat('?');
+  let newURL = temp2.concat(paramstring);
+  window.location.replace(newURL);
 }
 
 // Function that ends the game prematurely if the participant is taking >60 mins
@@ -1137,10 +1177,16 @@ function itiTimedOut() {
   d3.select('#countdown').attr('display', 'none');
   d3.select('#trialcount').attr('display', 'none');
 
-  refreshGameJs();
-  refreshIndexJs();
-
-  show('container-ititimeout', 'container-exp');
+  let url = new URL(window.location.href);
+  //let url = new URL('https://javascriptjeep.com?mode=night&page=2'); // for testing
+  let params = new URLSearchParams(url.search);
+  params.set('recsrc', encodeURIComponent(btoa('gaITI')));
+  params.append('t', encodeURIComponent(btoa(subjTrials.trialNum)));
+  let paramstring = params.toString();
+  let temp1 = url.pathname;
+  let temp2 = temp1.concat('?');
+  let newURL = temp2.concat(paramstring);
+  window.location.replace(newURL);
 }
 
 // Function that ends the game prematurely if the participant is taking >60 mins
@@ -1167,117 +1213,16 @@ function instrucTimedOut() {
   d3.select('#countdown').attr('display', 'none');
   d3.select('#trialcount').attr('display', 'none');
 
-  refreshGameJs();
-  refreshIndexJs();
-
-  show('container-instructimeout', 'container-exp');
-}
-
-// it's not clear to me if this matters, trying to solve numtrials not getting reset problem
-function refreshGameJs() {
-  clearTimeout(itiTimeoutTimer);
-  clearTimeout(gameTimer);
-  clearTimeout(instrucTimeoutTimer);
-
-  subjTrials = {
-    id: null,
-    name: null,
-    trialNum: null,
-    currentDate: null,
-    target_angle: null,
-    trial_type: null,
-    rotation: null,
-    hand_fb_angle: null,
-    rt: null,
-    mt: null,
-    search_time: null,
-    reach_feedback: null,
-    group_type: null,
-    posx: null,
-    posy: null,
-    postm: null
-  }
-
-  fileName = null;
-  svgContainer = null;
-  subject_ID = null;
-  target_dist = null;
-  trial_type = null;
-  start_x = null;
-  start_y = null;
-  start_radius = null;
-  start_color = null;
-  target_x = null;
-  target_y = null;
-  target_radius = null;
-  target_color = null;
-  hand_x = null;
-  hand_y = null;
-  hand_fb_x = null;
-  hand_fb_y = null;
-  r = null;
-  cursor_x = null;
-  cursor_y = null;
-  cursor_radius = null;
-  cursor_color = null;
-  search_color = null;
-  messages = null;
-  line_size = null;
-  message_size = null;
-  counter = null;
-  target_file_data = null;
-  rotation = null;
-  target_angle = null;
-  online_fb = null;
-  endpt_fb = null;
-  clamped_fb = null;
-  between_blocks = null;
-  trial = null;
-  num_trials = null;
-  search_tolerance = null;
-  hand_angle = null;
-  hand_fb_angle = null;
-  rt = null;
-  mt = null;
-  search_time = null;
-  feedback_time = null;
-  feedback_time_slow = null;
-  if_slow = null;
-  hold_time = null;
-  hold_timer = null;
-  fb_timer = null;
-  begin = null;
-  timing = null;
-  SEARCHING = null;
-  HOLDING = null;
-  SHOW_TARGETS = null;
-  MOVING = null;
-  FEEDBACK = null;
-  BETWEEN_BLOCKS = null;
-  game_phase = BETWEEN_BLOCKS;
-  reach_feedback = null;
-  bb_counter = null;
-  target_invisible = null;
-  mousepos_x = null;
-  mousepos_y = null;
-  mousetm = null;
-  elapsedTime = null;
-  curTime = null;
-  showCursor = null;
-  searchRad = null;
-  itiTimeoutTimer = null;
-  instrucTimeoutTimer = null;
-  instrucTimeLimit = null;
-  ititimelimit = null;
-  positer = null;
-  loopiter = null;
-  toSave_x = null;
-  toSave_y = null;
-  toSave_tm = null;
-  angleadd = null;
-  tempiter = null;
-  grp = null;
-  gameTimer = null;
+  let url = new URL(window.location.href);
+  //let url = new URL('https://javascriptjeep.com?mode=night&page=2'); // for testing
+  let params = new URLSearchParams(url.search);
+  params.set('recsrc', encodeURIComponent(btoa('gamIT')));
+  params.append('t', encodeURIComponent(btoa(subjTrials.trialNum)));
+  let paramstring = params.toString();
+  let temp1 = url.pathname;
+  let temp2 = temp1.concat('?');
+  let newURL = temp2.concat(paramstring);
+  window.location.replace(newURL);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

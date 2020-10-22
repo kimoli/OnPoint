@@ -69,29 +69,46 @@ function checkOrigin() {
   //let url = new URL('https://javascriptjeep.com?mode=night&page=2'); // for testing
   let params = new URLSearchParams(url.search);
   let recsrc = params.get('recsrc');
-  $('#welcome').fadeOut();
+  var entry = atob(decodeURIComponent(decodeURIComponent(params.get('recsrc'))));
+  var cv = params.get('t');
+  var outcode = decodeURIComponent(cv);
+  $('#welcome').hide();
   if (recsrc == null) { // if not recruited through SONA or mTurk, will have null
     // switch to the commented-out strategy if you want to be able to get consent and use the participant
     //setTimeout(displayConsent, 250);
 
     // do not let person participate
-    setTimeout(kick, 250);
+    $('#no-entry').show();
+  } else if (cv != null) {
+    console.log(entry);
+    console.log(outcode);
+    if (entry == 'gameT') {
+      document.getElementById("Tccd").innerHTML = outcode;
+      $('#container-timeout').show();
+    } else if (entry == 'gamIT') {
+      document.getElementById("ITccd").innerHTML = outcode;
+      $('#container_instructimeout').show();
+    } else if (entry == 'gaITI') {
+      document.getElementById("ITIccd").innerHTML = outcode;
+      $('#container-ititimeout').show();
+    } else if (entry == 'gameF') {
+      document.getElementById("Fccd").innerHTML = outcode;
+      $('#container-failed').show();
+    } else {
+      $('#no-entry').show();
+    }
+
+  } else if (entry == 'mTurk')  {
+    $('#container-instructions1').show();
   } else {
-    setTimeout(displayInstructions, 250);
+    $('#no-entry').show();
   }
 }
+
 
 function displayConsent() {
   $('#container-consent').fadeIn();
   $('#container-getConsentCode').fadeIn();
-}
-
-function kick() {
-  $('#no-entry').fadeIn();
-}
-
-function displayInstructions() {
-  $('#container-instructions1').fadeIn();
 }
 
 
