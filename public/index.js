@@ -4,7 +4,7 @@ This is all the non-game related content. E.g., collecting participant data, sta
 
 // Set to 'true' if you wish to only test the front-end (will not access databases)
 // **TODO** Make sure this is set to false before deploying!
-const noSave = true;
+const noSave = false;
 
 // Variables used for setting up the game
 var screen_height;
@@ -13,8 +13,10 @@ var elem;
 var ccds;
 var ccdx;
 
-// Possible completion codes
-ccds = ['some', 'body', 'once', 'toldme', 'theworld', 'wasgonna', 'rollme', 'iaintthe', 'sharpest', 'toolin', 'theshed'];
+
+// available variables
+ccds = ['spooky', 'scary', 'skeletons', 'pumpkins', 'witches', 'bats', 'candycorn', 'jackolantern', 'candyapple', 'blacklicorice', 'dentalfloss'];
+exptstring = "OK002_";
 
 /* TEMPORARY USE OF ORIGINAL CODE TO TEST THINGS OUT */
 try {
@@ -73,27 +75,35 @@ function checkOrigin() {
   var cv = params.get('t');
   var outcode = decodeURIComponent(cv);
   $('#welcome').hide();
-  if (recsrc == null) { // if not recruited through SONA or mTurk, will have null
+  var refreshed = checkForRefresh();
+  if (refreshed == 1) {
+    $('#no-refresh').show();
+  } else if (recsrc == null) { // if not recruited through SONA or mTurk, will have null
     // switch to the commented-out strategy if you want to be able to get consent and use the participant
     //setTimeout(displayConsent, 250);
 
     // do not let person participate
     $('#no-entry').show();
   } else if (cv != null) {
+
     console.log(entry);
     console.log(outcode);
+    console.log('checking');
     if (entry == 'gameT') {
       document.getElementById("Tccd").innerHTML = outcode;
       $('#container-timeout').show();
     } else if (entry == 'gamIT') {
       document.getElementById("ITccd").innerHTML = outcode;
-      $('#container_instructimeout').show();
+      $('#container-instructimeout').show();
     } else if (entry == 'gaITI') {
       document.getElementById("ITIccd").innerHTML = outcode;
       $('#container-ititimeout').show();
     } else if (entry == 'gameF') {
       document.getElementById("Fccd").innerHTML = outcode;
       $('#container-failed').show();
+    } else if (entry == 'gameE') {
+      document.getElementById("Eccd").innerHTML = outcode;
+      $('#container-escaped').show();
     } else {
       $('#no-entry').show();
     }
@@ -103,6 +113,20 @@ function checkOrigin() {
   } else {
     $('#no-entry').show();
   }
+}
+
+function checkForRefresh() {
+  // Use getEntriesByType() to just get the "navigation" events
+  var perfEntries = performance.getEntriesByType("navigation");
+  var foundrefresh = 0;
+  for (var i=0; i < perfEntries.length; i++) {
+    var p = perfEntries[i];
+    console.log(p.type);
+    if (p.type == 'reload') {
+      foundrefresh = 1;
+    }
+  }
+  return(foundrefresh)
 }
 
 
@@ -164,7 +188,9 @@ var subject = {
   pointerQ: null,
   startTm: null,
   endTm: null,
-  comments: null
+  comments: null,
+  exit: null,
+  code: null,
 }
 
 function checkConsent() {
@@ -188,9 +214,8 @@ function checkInfo() {
   var values = $("#infoform").serializeArray();
   // ADD SUBJECT ID HERE
   randomval = Math.floor(Math.random() * 999999999);
-  exptstring = "OK001_";
-  exptstring = exptstring.concat(randomval.toString())
-  subject.id = exptstring.concat('_');
+  var exptsubj = exptstring.concat(randomval.toString());
+  subject.id = exptsubj.concat('_');
   console.log(subject.id);
   subject.age = values[0].value;
   subject.sex = values[1].value;
@@ -205,10 +230,9 @@ function checkInfo() {
   let url = new URL(window.location.href);
   let params = new URLSearchParams(url.search);
   let recsrc = params.get('recsrc');
-  subject.recruitment = recsrc;
+  subject.recruitment = atob(decodeURIComponent(recsrc));
 
   ccdx = Math.floor(Math.random() * 10)+1;
-  document.getElementById("ccd").innerHTML = ccds[ccdx];
 
   console.log(subject.handedness);
   console.log(values)
@@ -249,7 +273,6 @@ function saveFeedback() {
   var values = $("#feedbackForm").serializeArray();
   subject.pointerQ = values[0].value;
   subject.comments = values[1].value;
-  subject.endTm = new Date();
   // Currently not employing the clampQ question, but can be used
   // if(!subject.clampQ) {
   //   alert("Please answer the first question! You can leave the second question blank.")
@@ -269,14 +292,15 @@ function checkExit() {
   console.log(window.location.href);
   //let url = new URL('https://javascriptjeep.com?mode=night&page=2'); // for testing
   let params = new URLSearchParams(url.search);
-  let recsrc = params.get('recsrc');
-  if (recsrc == "SONA") {
+  var entry = atob(decodeURIComponent(decodeURIComponent(params.get('recsrc'))));
+  console.log(entry)
+  if (entry == "SONA") {
     params.append('credit_token', "abcd")
     params.delete('recsrc')
     var qparstr = params.toString();
     redirURL = 'https://princeton.sona-systems.com/webstudy_credit.aspx' + '?' + qparstr;
     $('#final-page-SONA').show();
-  } else if (recsrc == "mTurk") {
+  } else if (entry == "mTurk") {
     $('#final-page-mturk').show();
   } else { // if person did not come in from mTurk or SONA
     $('#final-page-other').show();

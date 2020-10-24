@@ -27,7 +27,8 @@
     <script src="./__/firebase/6.6.1/firebase-storage.js"></script>
     <!-- initialize the SDK after all desired features are loaded -->
     <script src="./__/firebase/init.js"></script>
-    
+
+        
     <!-- <style media="screen">
       body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
       #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
@@ -195,14 +196,17 @@
            You will be controlling a green dot with your trackpad. The green dot will sometimes be visible, and other times hidden. Even when you don't see the green dot, the game will always be tracking its position.
         </p>
         <p> 
-          Please use a <b>computer mouse</b> or <b>trackpad</b> to complete the task.
+          If possible, please use a <b>trackpad</b> to complete the task. If you don't have a trackpad, a <b>computer mouse</b> is fine.
+        </p>
+        <p>
+          The aiming game itself should take you 7-12 minutes to complete.
         </p>
         <br>
         <p>
-          <b><em>NOTES:</em></b> <br>
-          &nbsp;&nbsp;&nbsp;&nbsp;1. Once the game begins, you can quit the experiment at any time by pressing "Esc" and closing your browser tab or window.<br><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;2. There are attention checks, so be sure to read all instructions thoroughly! Failing these checks will terminate the experiment.<br><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;3. The experiment will be terminated if you do not respond to the given instructions or move the mouse to the target in a timely manner.
+          <b><em>IMPORTANT INFORMATION:</em></b> <br>
+          <p style="margin-left: 40px">1. To quit the experiment once the game begins, press "Esc" or exit fullscreen another way. <strong>Leaving fullscreen ends the HIT, and you will not be able to restart.</strong></p>
+          <p style="margin-left: 40px">2. There are attention checks, so be sure to read all instructions thoroughly! <strong>Failing an attention check ends the HIT, and you will not be able to restart.</strong></p>
+          <p style="margin-left: 40px">3. This experiment requires your full attention. <strong>If you do not respond in a timely manner, the HIT will end. You will not be able to restart.</strong></p>
         </p>
       <hr class="class-1"/>
       <center>
@@ -223,33 +227,42 @@
             <p>There are three simple steps to get through the experiment:</p>
             
             <p style="margin-left: 40px">
-                1. Use your mouse/trackpad to bring the green dot to the center of your screen.
+                1. Use your mouse/trackpad to bring the green dot to the white ring at the center of your screen. The colored wedges will guide you to the center.
             </p>
-            <p style="margin-left: 80px"> A. The green dot will initially be hidden, and a yellow ring will indicate the distance between your cursor and the center of the screen (empty green circle). In the video below, a white mouse pointer is visible for illustrative purposes, but the pointer will not be visible during the experiment.<br>
+            <p style="margin-left: 80px"> A. The wedges show you what part of the screen your pointer is in. In the video below, a white mouse pointer is visible for illustrative purposes, but the pointer will not be visible during the experiment.<br>
               <div class="row">
                 <center>
                     <div class="columnB2">
-                        <video controls autoplay loop muted src="images/greenCenterYellowSearch_dotHidden.mp4" alt="Game image" style="width:100%"></video>
+                        <video controls autoplay loop muted src="images/wedges_showDirection.mp4" alt="Game image" style="width:100%"></video>
                     </div>
                 </center>
               </div><br>
             </p>
-            <p style="margin-left: 80px"> B. When the cursor is within a certain distance from the center, the green dot will become visible. When the cursor is at the center of the screen, the center circle will be filled.<br>
+            <p style="margin-left: 80px"> B. The wedges also show you how far from the white ring the pointer is.<br>
               <div class="row">
                 <center>
                     <div class="columnB2">
-                        <video controls autoplay loop muted src="images/greenCenterYellow_findCenter.mp4" alt="Game image" style="width:100%"></video>
+                        <video controls autoplay loop muted src="images/wedges_showDistance.mp4" alt="Game image" style="width:100%"></video>
+                    </div>
+                </center>
+              </div><br>
+            </p>
+            <p style="margin-left: 80px"> C. When you get close enough to the white ring, you will see your cursor. Put your cursor inside the white ring to make it disappear.<br>
+              <div class="row">
+                <center>
+                    <div class="columnB2">
+                        <video controls autoplay loop muted src="images/wedges_getToCenter.mp4" alt="Game image" style="width:100%"></video>
                     </div>
                 </center>
               </div><br>
             </p>
             
             <p style="margin-left: 40px">
-              2. Once the pink dot (your target) appears, slice through it <em>FAST</em> with the green dot (visible or hidden).<br>
+              2. Hold your cursor there until a pink dot (your target) is revealed. When you see the pink target, slice through it <em>FAST</em> with the green dot (visible or hidden).<br>
               <div class="row">
                 <center>
                     <div class="columnB2">
-                        <video controls autoplay loop muted src="images/greenToPink_singleTrial.mp4" alt="Game image" style="width:100%"></video>
+                        <video controls autoplay loop muted src="images/wedges_trials.mp4" alt="Game image" style="width:100%"></video>
                     </div>
                 </center>
               </div><br>
@@ -257,13 +270,6 @@
 
             <p style="margin-left: 40px">
               3. Repeat from step 1 until you have completed all 115 trials (trial counter shown in bottom left corner of the screen).<br>
-              <div class="row">
-                <center>
-                    <div class="columnB2">
-                        <video controls autoplay loop muted src="images/greenToPink_multitrial.mp4" alt="Game image" style="width:100%"></video>
-                    </div>
-                </center>
-              </div><br>
             </p>
             
             <p>
@@ -546,6 +552,19 @@
         </div>
     </div>
 
+    <!-- Escaped Fullscreen -->
+    <div id="container-escaped" style="display:none">
+      <div class="bodytext">
+                  <h1><b>You have quit the game.</b></h1>
+                  <hr />
+                  <p>If you are seeing this page, it means you left fullscreen mode and quit the game.</p>
+                  <p>This HIT has been terminated.</p>
+                  <br>
+                  If you think something's gone wrong, please email the following code to oakim@princeton.edu. Please include "Incomplete Aiming Experiment" in the subject line.<br>
+                  Your code is: <strong><span id="Eccd">(innerHTML)</span></strong>
+      </div>
+  </div>
+
     <!-- Timeout page -->
     <div id="container-timeout" style="display:none">
         <div class="bodytext">
@@ -628,6 +647,16 @@
       <h2>If you believe you have reached this page in error, please reach out to oakim@princeton.edu to explain your situation and get access to the experiment.</h2>
       <h2>Goodbye :)</h2>
     </div>
+    <div id="no-refresh" style="display:none" class="bodytext">
+        
+      <h1><b>Uh oh...</b></h1>
+      <hr class="class-1"/>
+
+      <h2>It looks like you've already done part of this HIT.</h2>
+      <h2>We cannot use responses from someone with previous experience in the experiment. Thus, we kindly ask you to exit this HIT.</h2>
+      <h2>We are sorry for the inconvenience.</h2>
+      <h2>If you think something's gone wrong, please email oakim@princeton.edu and explain your situation.</h2>
+</div>
 
     <!-- Person did not consent -->
     <div id="decline-expt" style="display:none">

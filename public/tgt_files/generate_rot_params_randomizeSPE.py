@@ -19,8 +19,8 @@ def generateTargetAngles(numTargets):
     """
     temporary usage of this function for non-evenly spaced targets
     """
-    angleInterval = 45/(numTargets - 1)
-    angleStart = 45
+    angleInterval = 30/(numTargets - 1)
+    angleStart = 0
     angleList = [0] * numTargets
     for x in range(0, numTargets):
         angleList[x] = angleStart + (angleInterval * x)
@@ -96,7 +96,7 @@ def generateJSON(numTargets, movementCycle, cycleDistribution, rotationAngle, SP
             # for some reason, it is doing X cycles * number of targets, but I'm not sure why, because there is only one demo target right now
             onlineFB[i] = 1
             endpointFB[i] = 1
-            rotation[i] = float(rotationAngle * SPEternary[i])
+            rotation[i] = float(rotationAngle)
             clampedFB[i] = float(1)
             targetJump[i] = float(0)
         elif i < rotate : # training trials, will have cycleDistribution[3] of these for every target location
@@ -206,7 +206,7 @@ for iter in range(1, 101):
         twoback = oneback
         oneback = tempval
 
-    generateJSON(8, 14, nonDemoCycles, 1.75, SPEternary, 80, 1, 270, iter)
+    generateJSON(8, 14, nonDemoCycles, 10, SPEternary, 80, 1, 195, iter)  # 195 should put the 3 practice trials 180 degrees opposite of the target dist
 """
 The above call 'generateJSON(2, 8, nonDemoCycles, -10, 80, 2, 270)' will generate a target file with:
 - 2 targets
