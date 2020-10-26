@@ -1228,6 +1228,9 @@ function badGame() {
 
 // Function that ends the game appropriately after the experiment has been completed
 function endGame() {
+  clearTimeout(instrucTimeoutTimer); // clear instruction timer -- don't want completion code to be overwritten if person doesn't close the window in a minute
+  clearTimeout(itiTimeoutTimer); // clear ITI timer  -- don't want completion code to be overwritten if person doesn't close the window in a minute
+
   fullscreen = 0;
   subject.exit = 'good';
   subject.code = ccds[ccdx];

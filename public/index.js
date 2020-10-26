@@ -14,6 +14,8 @@ var ccds;
 var ccdx;
 
 
+
+
 // available variables
 ccds = ['spooky', 'scary', 'skeletons', 'pumpkins', 'witches', 'bats', 'candycorn', 'jackolantern', 'candyapple', 'blacklicorice', 'dentalfloss'];
 exptstring = "OK002_";
@@ -183,6 +185,7 @@ var subject = {
   recruitment: null,
   currTrial: 0,
   tgt_file: null,
+  tgt_dist: null,
   ethnicity: null,
   race: null,
   pointerQ: null,
@@ -312,27 +315,6 @@ function redirectButton() {
   window.location.replace(redirURL);
 }
 
-// not clear to me that this matters. Trying to solve number of trials not getting reset
-function refreshIndexJs() {
-  subject = {
-    id: null,
-    age: null,
-    sex: null,
-    handedness: null,
-    mousetype: null,
-    returner: null,
-    currTrial: 0,
-    tgt_file: null,
-    ethnicity: null,
-    race: null,
-    clampQ: null,
-    pointerQ: null,
-    comments: null,
-    sname: null
-  }
-
-  //console.log(subject);
-}
 
 document.addEventListener('DOMContentLoaded', function () {
   // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
